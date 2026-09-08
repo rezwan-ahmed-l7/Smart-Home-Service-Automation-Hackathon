@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
-import { Home, Wrench, User } from "lucide-react";
+import { Home, Wrench, User, ClipboardList } from "lucide-react";
 import CustomerHome from "./pages/CustomerHome";
 import MatchResult from "./pages/MatchResult";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import Tracking from "./pages/Tracking";
+import MyRequests from "./pages/MyRequests";
 
 function Navbar() {
   return (
@@ -17,6 +18,9 @@ function Navbar() {
         <div className="flex gap-4">
           <Link to="/" className="flex items-center gap-1 text-gray-700 hover:text-blue-600">
             <Home size={18} /> Home
+          </Link>
+          <Link to="/my-requests" className="flex items-center gap-1 text-gray-700 hover:text-blue-600">
+            <ClipboardList size={18} /> My Requests
           </Link>
           <Link to="/provider" className="flex items-center gap-1 text-gray-700 hover:text-blue-600">
             <User size={18} /> Provider
@@ -37,6 +41,7 @@ export default function App() {
             <Route path="/" element={<CustomerHome />} />
             <Route path="/match/:id" element={<MatchResult />} />
             <Route path="/tracking/:id" element={<Tracking />} />
+            <Route path="/my-requests" element={<MyRequests />} />
             <Route path="/provider" element={<ProviderDashboard />} />
           </Routes>
         </div>

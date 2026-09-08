@@ -13,7 +13,9 @@ export default function Tracking() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
         <p className="text-gray-600">Request not found.</p>
-        <Link to="/" className="text-blue-600 mt-4 inline-block">← Go Home</Link>
+        <Link to="/" className="text-blue-600 mt-4 inline-block">
+          ← Go Home
+        </Link>
       </div>
     );
   }
@@ -28,6 +30,7 @@ export default function Tracking() {
         {request.serviceName} • {request.location}
       </p>
 
+      {/* Status Timeline */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
         <h2 className="font-semibold text-gray-900 mb-5">Status</h2>
         <div className="space-y-4">
@@ -45,7 +48,15 @@ export default function Tracking() {
                   {isCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
                 </div>
                 <div>
-                  <p className={`font-medium ${isCurrent ? "text-blue-600" : isCompleted ? "text-gray-900" : "text-gray-400"}`}>
+                  <p
+                    className={`font-medium ${
+                      isCurrent
+                        ? "text-blue-600"
+                        : isCompleted
+                        ? "text-gray-900"
+                        : "text-gray-400"
+                    }`}
+                  >
                     {step}
                   </p>
                   {isCurrent && <p className="text-xs text-gray-500">Current status</p>}
@@ -56,6 +67,7 @@ export default function Tracking() {
         </div>
       </div>
 
+      {/* Request Details */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
         <h2 className="font-semibold text-gray-900 mb-4">Request Details</h2>
         <div className="space-y-3 text-sm text-gray-600">
@@ -77,6 +89,7 @@ export default function Tracking() {
         </div>
       </div>
 
+      {/* Assigned Provider */}
       {assignedProvider && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
           <h2 className="font-semibold text-gray-900 mb-4">Assigned Provider</h2>
@@ -88,6 +101,24 @@ export default function Tracking() {
             <p className="text-sm text-gray-500 mt-1">
               Rating: {assignedProvider.rating} • {assignedProvider.distance} km away
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Rating (only when Completed) */}
+      {request.status === "Completed" && (
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+          <h2 className="font-semibold text-gray-900 mb-3">Rate this service</h2>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                className="text-2xl text-yellow-400 hover:scale-110 transition"
+                onClick={() => alert(`Thanks for rating ${star} stars!`)}
+              >
+                ★
+              </button>
+            ))}
           </div>
         </div>
       )}
