@@ -1,0 +1,50 @@
+{
+  "planHash": "8d4e0884bb10747fafd01851b0ee5739cae2ffa89aed5050f51cdf1b10c98328",
+  "phase": "baseline",
+  "recordedAtUtc": "2026-09-08T16:04:54.2967332Z",
+  "retryCount": 0,
+  "resetBaseline": true,
+  "result": {
+    "setupSucceeded": true,
+    "setupDurationMs": 0,
+    "setupFailureOutput": null,
+    "assertions": [
+      {
+        "name": "production-build",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E smart-home-service@0.0.0 build\r\n\u003E vite build\r\n\r\n\u001B[36mvite v8.2.2 \u001B[32mbuilding client environment for production...\u001B[36m\u001B[39m\r\ntransforming...\r\n\u2713 1862 modules transformed.\r\nrendering chunks...\r\ncomputing gzip size...\r\ndist/index.html                   0.46 kB \u2502 gzip:  0.30 kB\r\ndist/assets/index-DFVhfyRB.css   18.83 kB \u2502 gzip:  4.50 kB\r\ndist/assets/index-CG6xm2dJ.js   262.92 kB \u2502 gzip: 82.44 kB\r\n\r\n\u001B[32m\u2713 built in 672ms\u001B[39m\r\n",
+        "durationMs": 2900
+      },
+      {
+        "name": "customer-request-flow",
+        "kind": "playwright-route",
+        "verificationMethod": "exit-code",
+        "passed": false,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 1,
+        "outputSample": "\r\nRunning 1 test using 1 worker\r\n\r\n  x  1 .tsupgrader\\runtime-validation\\playwright-scripts\\customer-request.spec.ts:3:1 \u203A customer can start a service request (6ms)\r\n\r\n\r\n  1) .tsupgrader\\runtime-validation\\playwright-scripts\\customer-request.spec.ts:3:1 \u203A customer can start a service request \r\n\r\n    Error: browserType.launch: Executable doesn\u0027t exist at C:\\Users\\Rezwan\\AppData\\Local\\ms-playwright\\chromium_headless_shell-1243\\chrome-headless-shell-win64\\chrome-headless-shell.exe\r\n    \u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\r\n    \u2551 Looks like Playwright was just installed or updated.       \u2551\r\n    \u2551 Please run the following command to download new browsers: \u2551\r\n    \u2551                                                            \u2551\r\n    \u2551     npx playwright install                                 \u2551\r\n    \u2551                                                            \u2551\r\n    \u2551 \u003C3 Playwright Team                                         \u2551\r\n    \u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n\r\n    Error Context: test-results\\.tsupgrader-runtime-valida-ee6a7-can-start-a-service-request\\error-context.md\r\n\r\n  1 failed\r\n    .tsupgrader\\runtime-validation\\playwright-scripts\\customer-request.spec.ts:3:1 \u203A customer can start a service request \r\n",
+        "durationMs": 2232
+      },
+      {
+        "name": "tests-pass",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E smart-home-service@0.0.0 build\r\n\u003E vite build\r\n\r\n\u001B[36mvite v8.2.2 \u001B[32mbuilding client environment for production...\u001B[36m\u001B[39m\r\ntransforming...\r\n\u2713 1862 modules transformed.\r\nrendering chunks...\r\ncomputing gzip size...\r\ndist/index.html                   0.46 kB \u2502 gzip:  0.30 kB\r\ndist/assets/index-DFVhfyRB.css   18.83 kB \u2502 gzip:  4.50 kB\r\ndist/assets/index-CG6xm2dJ.js   262.92 kB \u2502 gzip: 82.44 kB\r\n\r\n\u001B[32m\u2713 built in 498ms\u001B[39m\r\n",
+        "durationMs": 2109
+      }
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "SmartService" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - text: SmartService
+      - generic [ref=e9]:
+        - link "Home" [ref=e10] [cursor=pointer]:
+          - /url: /
+          - img [ref=e11]
+          - text: Home
+        - link "My Requests" [ref=e14] [cursor=pointer]:
+          - /url: /my-requests
+          - img [ref=e15]
+          - text: My Requests
+        - link "Provider" [ref=e18] [cursor=pointer]:
+          - /url: /provider
+          - img [ref=e19]
+          - text: Provider
+  - generic [ref=e22]:
+    - generic [ref=e23]:
+      - heading "What service do you need?" [level=1] [ref=e24]
+      - paragraph [ref=e25]: Select a category to get started
+    - generic [ref=e26]:
+      - button "Appliance & Gadget Repair AC, Fridge, TV, Washing Machine repair" [ref=e27]:
+        - img [ref=e29]
+        - heading "Appliance & Gadget Repair" [level=3] [ref=e31]
+        - paragraph [ref=e32]: AC, Fridge, TV, Washing Machine repair
+      - button "Plumbing Pipe leak, bathroom, kitchen plumbing" [ref=e33]:
+        - img [ref=e35]
+        - heading "Plumbing" [level=3] [ref=e38]
+        - paragraph [ref=e39]: Pipe leak, bathroom, kitchen plumbing
+      - button "Electrical Wiring, switch, fan, light issues" [ref=e40]:
+        - img [ref=e42]
+        - heading "Electrical" [level=3] [ref=e44]
+        - paragraph [ref=e45]: Wiring, switch, fan, light issues
+      - button "Cleaning & Pest Control Home cleaning, pest control service" [ref=e46]:
+        - img [ref=e48]
+        - heading "Cleaning & Pest Control" [level=3] [ref=e51]
+        - paragraph [ref=e52]: Home cleaning, pest control service
+      - button "Home Maintenance General home repair & maintenance" [ref=e53]:
+        - img [ref=e55]
+        - heading "Home Maintenance" [level=3] [ref=e58]
+        - paragraph [ref=e59]: General home repair & maintenance
+      - button "Moving & Shifting House shifting, packing, moving" [ref=e60]:
+        - img [ref=e62]
+        - heading "Moving & Shifting" [level=3] [ref=e67]
+        - paragraph [ref=e68]: House shifting, packing, moving
+      - button "Car Care & Repair Car servicing, washing, repair" [ref=e69]:
+        - img [ref=e71]
+        - heading "Car Care & Repair" [level=3] [ref=e75]
+        - paragraph [ref=e76]: Car servicing, washing, repair
+      - button "Personal Care Beauty, salon, personal services" [ref=e77]:
+        - img [ref=e79]
+        - heading "Personal Care" [level=3] [ref=e82]
+        - paragraph [ref=e83]: Beauty, salon, personal services
