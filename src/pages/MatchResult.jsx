@@ -1,10 +1,11 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { Star, MapPin, Clock, Phone } from "lucide-react";
+import { Star, MapPin, Clock, Phone, CheckCircle } from "lucide-react";
 
 export default function MatchResult() {
   const { id } = useParams();
-  const { requests } = useApp();
+  const navigate = useNavigate();
+  const { requests, acceptRequest } = useApp();
   const request = requests.find((r) => r.id === id);
 
   if (!request) {
@@ -16,12 +17,26 @@ export default function MatchResult() {
     );
   }
 
+  const handleSelectProvider = (providerId) => {
+    acceptRequest(id, providerId);
+    navigate(`/tracking/${id}`);
+  };
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Recommended Providers</h1>
       <p className="text-gray-600 mb-8">
         For <span className="font-medium">{request.serviceName}</span> in {request.location}
       </p>
+
+      {request.status !== "Requested" && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+          <CheckCircle className="text-green-600" size={20} />
+          <p className="text-green-800 text-sm">
+            Provider already selected. Status: <strong>{request.status}</strong>
+          </p>
+        </div>
+      )}
 
       <div className="space-y-4">
         {request.matchedProviders?.map((provider, index) => (
@@ -39,27 +54,47 @@ export default function MatchResult() {
                   <Star size={14} className="text-yellow-500" /> {provider.rating} ({provider.reviews})
                 </span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} /> {provider.distance} km
+                  <MapPin size={14} /> {provider.distance} km away
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock size={14} /> {provider.availableSlots[0]}
+                  <Clock size={14} /> Available: {provider.availableSlots[0]}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Phone size={14} /> {provider.phone}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 mt-1">Match Score: <span className="font-medium text-green-600">{provider.matchScore}</span></p>
+              <p className="text-sm text-gray-500 mt-1">
+                Match Score: <span className="font-medium text-green-600">{provider.matchScore}</span>
+              </p>
             </div>
+
             <div className="text-right">
-              <p className="font-semibold text-gray-900">{provider.priceRange}</p>
-              <button className="mt-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition">
-                Select Provider
-              </button>
+              <p className="font-semibold text-gray-900 mb-2">{provider.priceRange}</p>
+              {request.status === "Requested" ? (
+                <button
+                  onClick={() => handleSelectProvider(provider.id)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition"
+                >
+                  Select Provider
+                </button>
+              ) : request.assignedProviderId === provider.id ? (
+                <span className="text-green-600 text-sm font-medium">Selected</span>
+              ) : null}
             </div>
           </div>
         ))}
       </div>
 
-      <Link to="/" className="inline-block mt-8 text-blue-600 hover:underline">
-        ← Request another service
-      </Link>
+      <div className="mt-8 flex gap-4">
+        <Link to="/" className="text-blue-600 hover:underline text-sm">
+          ← Request another service
+        </Link>
+        {request.status !== "Requested" && (
+          <Link to={`/tracking/${id}`} className="text-blue-600 hover:underline text-sm">
+            Track this request →
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

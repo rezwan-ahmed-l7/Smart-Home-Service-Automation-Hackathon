@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 import { Home, Wrench, User } from "lucide-react";
 import CustomerHome from "./pages/CustomerHome";
+import MatchResult from "./pages/MatchResult";
+import ProviderDashboard from "./pages/ProviderDashboard";
+import Tracking from "./pages/Tracking";
 
 function Navbar() {
   return (
@@ -24,15 +27,6 @@ function Navbar() {
   );
 }
 
-function ProviderPage() {
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Provider Dashboard</h1>
-      <p className="text-gray-600">Incoming requests will show here.</p>
-    </div>
-  );
-}
-
 export default function App() {
   return (
     <AppProvider>
@@ -41,7 +35,9 @@ export default function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<CustomerHome />} />
-            <Route path="/provider" element={<ProviderPage />} />
+            <Route path="/match/:id" element={<MatchResult />} />
+            <Route path="/tracking/:id" element={<Tracking />} />
+            <Route path="/provider" element={<ProviderDashboard />} />
           </Routes>
         </div>
       </BrowserRouter>
