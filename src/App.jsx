@@ -29,7 +29,7 @@ function HomePage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Smart Home Service</h1>
       <p className="text-gray-600 mb-8">Request any home service in seconds. We match the best provider for you.</p>
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-        <p className="text-blue-800 font-medium">Service Selection page next e asbe...</p>
+        <p className="text-blue-800 font-medium">Service Selection page coming next...</p>
       </div>
     </div>
   );
