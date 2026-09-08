@@ -9,11 +9,24 @@ export function AppProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [currentUser, setCurrentUser] = useState("customer"); // "customer" | "provider"
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem("smartservice_user");
+    return saved ? JSON.parse(saved) : null;
+  });
 
   useEffect(() => {
     localStorage.setItem("service_requests", JSON.stringify(requests));
   }, [requests]);
+
+  const login = (user) => {
+    setCurrentUser(user);
+    localStorage.setItem("smartservice_user", JSON.stringify(user));
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("smartservice_user");
+  };
 
   const addRequest = (request) => {
     const newRequest = {
@@ -50,7 +63,8 @@ export function AppProvider({ children }) {
         updateRequestStatus,
         acceptRequest,
         currentUser,
-        setCurrentUser,
+        login,
+        logout,
         providers,
       }}
     >

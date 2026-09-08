@@ -23,9 +23,10 @@ export default function MatchResult() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Recommended Providers</h1>
-      <p className="text-gray-600 mb-8">
+    <div className="page-wrap max-w-4xl">
+      <p className="eyebrow">Your perfect match</p>
+      <h1 className="page-title text-4xl">Recommended Providers</h1>
+      <p className="page-subtitle mb-10">
         For <span className="font-medium">{request.serviceName}</span> in {request.location}
       </p>
 
@@ -42,7 +43,7 @@ export default function MatchResult() {
         {request.matchedProviders?.map((provider, index) => (
           <div
             key={provider.id}
-            className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            className="surface p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-indigo-300 transition"
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -73,7 +74,7 @@ export default function MatchResult() {
               {request.status === "Requested" ? (
                 <button
                   onClick={() => handleSelectProvider(provider.id)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition"
+                  className="primary-button text-sm font-semibold px-5 py-2.5 rounded-xl transition"
                 >
                   Select Provider
                 </button>

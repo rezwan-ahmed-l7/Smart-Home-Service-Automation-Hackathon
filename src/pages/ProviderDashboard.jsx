@@ -36,20 +36,21 @@ export default function ProviderDashboard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div className="page-wrap max-w-5xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Provider Dashboard</h1>
-        <p className="text-gray-600 mt-1">Manage incoming service requests</p>
+        <p className="eyebrow">Professional workspace</p>
+        <h1 className="page-title text-4xl">Provider Dashboard</h1>
+        <p className="page-subtitle mt-2">Manage incoming service requests with confidence.</p>
       </div>
 
       {incomingRequests.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+        <div className="surface p-12 text-center">
           <p className="text-gray-500">No incoming requests right now.</p>
         </div>
       ) : (
         <div className="space-y-5">
           {incomingRequests.map((req) => (
-            <div key={req.id} className="bg-white border border-gray-200 rounded-2xl p-6">
+            <div key={req.id} className="surface p-6 sm:p-7">
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
@@ -112,7 +113,7 @@ export default function ProviderDashboard() {
                   <>
                     <button
                       onClick={() => handleAccept(req.id)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition flex items-center gap-2"
+                      className="primary-button text-sm font-semibold px-5 py-2.5 rounded-xl transition"
                     >
                       <CheckCircle size={16} /> Accept Job
                     </button>
@@ -128,7 +129,7 @@ export default function ProviderDashboard() {
                 {["Accepted", "On the Way", "In Progress"].includes(req.status) && (
                   <button
                     onClick={() => handleStatusUpdate(req.id, req.status)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition flex items-center gap-2"
+                    className="primary-button text-sm font-semibold px-5 py-2.5 rounded-xl transition"
                   >
                     {req.status === "Accepted" && <Truck size={16} />}
                     {req.status === "On the Way" && <Play size={16} />}

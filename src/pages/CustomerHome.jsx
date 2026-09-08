@@ -71,26 +71,27 @@ export default function CustomerHome() {
   // ========== STEP 1: Service Selection ==========
   if (step === 1) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">What service do you need?</h1>
-          <p className="text-gray-600 mt-2">Select a category to get started</p>
+      <div className="page-wrap">
+        <div className="max-w-3xl mb-10">
+          <p className="eyebrow">Reliable help, beautifully simple</p>
+          <h1 className="page-title">Make home feel effortless.</h1>
+          <p className="page-subtitle mt-3">Tell us what you need and we’ll connect you with a trusted local professional.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {serviceCategories.map((service) => {
             const Icon = iconMap[service.icon] || Wrench;
             return (
               <button
                 key={service.id}
                 onClick={() => handleServiceSelect(service)}
-                className="bg-white border border-gray-200 rounded-2xl p-6 text-left hover:border-blue-500 hover:shadow-md transition-all group"
+                className="surface service-card p-5 text-left group"
               >
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-100 transition">
-                  <Icon className="text-blue-600" size={24} />
+                <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-indigo-100 transition">
+                  <Icon className="text-indigo-600" size={23} />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
-                <p className="text-sm text-gray-500">{service.description}</p>
+                <h3 className="font-bold text-gray-900 mb-1">{service.name}</h3>
+                <p className="text-sm leading-5 text-gray-500">{service.description}</p>
               </button>
             );
           })}
@@ -101,20 +102,21 @@ export default function CustomerHome() {
 
   // ========== STEP 2: Request Form ==========
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="page-wrap max-w-3xl">
       <button
         onClick={() => setStep(1)}
-        className="text-blue-600 text-sm mb-6 hover:underline"
+        className="text-indigo-600 text-sm font-semibold mb-8 hover:underline"
       >
         ← Back to services
       </button>
 
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Request {selectedService.name}</h1>
-        <p className="text-gray-600 mt-1">Fill in the details so we can find the best provider</p>
+        <p className="eyebrow">Service request</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-2">Request {selectedService.name}</h1>
+        <p className="text-gray-600 mt-2">A few details help us find the right professional for you.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="surface p-6 sm:p-8 space-y-6">
         {/* Location */}
         <div>
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
@@ -126,7 +128,7 @@ export default function CustomerHome() {
             value={form.location}
             onChange={handleChange}
             placeholder="e.g. Dhanmondi, Dhaka"
-            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="field px-4 py-3"
             required
           />
         </div>
@@ -142,7 +144,7 @@ export default function CustomerHome() {
               name="preferredDate"
               value={form.preferredDate}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field px-4 py-3"
               required
             />
           </div>
@@ -154,7 +156,7 @@ export default function CustomerHome() {
               name="preferredTime"
               value={form.preferredTime}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field px-4 py-3"
               required
             >
               <option value="">Select time</option>
@@ -192,7 +194,7 @@ export default function CustomerHome() {
                       : level === "Urgent"
                       ? "bg-orange-50 border-orange-500 text-orange-700"
                       : "bg-blue-50 border-blue-500 text-blue-700"
-                    : "border-gray-300 text-gray-600 hover:border-gray-400"
+                    : "border-gray-200 text-gray-600 hover:border-indigo-300 bg-gray-50"
                 }`}
               >
                 {level}
@@ -212,7 +214,7 @@ export default function CustomerHome() {
             onChange={handleChange}
             rows={3}
             placeholder="Describe the issue briefly..."
-            className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="field px-4 py-3 resize-none"
           />
         </div>
 
@@ -228,7 +230,7 @@ export default function CustomerHome() {
               value={form.contactName}
               onChange={handleChange}
               placeholder="Full name"
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field px-4 py-3"
               required
             />
           </div>
@@ -242,7 +244,7 @@ export default function CustomerHome() {
               value={form.contactPhone}
               onChange={handleChange}
               placeholder="01XXXXXXXXX"
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field px-4 py-3"
               required
             />
           </div>
@@ -257,14 +259,14 @@ export default function CustomerHome() {
             type="file"
             accept="image/*"
             onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.files[0] }))}
-            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
           />
         </div>
 
         {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition"
+          className="primary-button w-full font-bold py-3.5 rounded-xl"
         >
           Find Best Providers
         </button>

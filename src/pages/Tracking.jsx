@@ -24,14 +24,15 @@ export default function Tracking() {
   const assignedProvider = providers.find((p) => p.id === request.assignedProviderId);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Track Your Request</h1>
-      <p className="text-gray-600 mb-8">
+    <div className="page-wrap max-w-3xl">
+      <p className="eyebrow">Live service status</p>
+      <h1 className="page-title text-4xl">Track Your Request</h1>
+      <p className="page-subtitle mb-10">
         {request.serviceName} • {request.location}
       </p>
 
       {/* Status Timeline */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+      <div className="surface p-6 sm:p-7 mb-6">
         <h2 className="font-semibold text-gray-900 mb-5">Status</h2>
         <div className="space-y-4">
           {statusSteps.map((step, index) => {
@@ -68,7 +69,7 @@ export default function Tracking() {
       </div>
 
       {/* Request Details */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+      <div className="surface p-6 sm:p-7 mb-6">
         <h2 className="font-semibold text-gray-900 mb-4">Request Details</h2>
         <div className="space-y-3 text-sm text-gray-600">
           <div className="flex items-center gap-2">
@@ -91,7 +92,7 @@ export default function Tracking() {
 
       {/* Assigned Provider */}
       {assignedProvider && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+        <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-4">Assigned Provider</h2>
           <div>
             <p className="font-medium text-gray-900">{assignedProvider.name}</p>
@@ -107,7 +108,7 @@ export default function Tracking() {
 
       {/* Rating (only when Completed) */}
       {request.status === "Completed" && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+        <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-3">Rate this service</h2>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
