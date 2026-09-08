@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 import { Home, Wrench, User } from "lucide-react";
+import CustomerHome from "./pages/CustomerHome";
 
 function Navbar() {
   return (
@@ -23,18 +24,6 @@ function Navbar() {
   );
 }
 
-function HomePage() {
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Smart Home Service</h1>
-      <p className="text-gray-600 mb-8">Request any home service in seconds. We match the best provider for you.</p>
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-        <p className="text-blue-800 font-medium">Service Selection page coming next...</p>
-      </div>
-    </div>
-  );
-}
-
 function ProviderPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -51,7 +40,7 @@ export default function App() {
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<CustomerHome />} />
             <Route path="/provider" element={<ProviderPage />} />
           </Routes>
         </div>
