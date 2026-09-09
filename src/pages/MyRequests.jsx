@@ -3,9 +3,9 @@ import { useApp } from "../context/AppContext";
 import { Clock, MapPin, ChevronRight } from "lucide-react";
 
 export default function MyRequests() {
-  const { requests } = useApp();
+  const { requests, currentUser } = useApp();
 
-  const sorted = [...requests].sort(
+  const sorted = requests.filter((request) => request.ownerEmail && request.ownerEmail === currentUser.email).sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 

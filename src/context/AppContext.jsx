@@ -3,16 +3,29 @@ import { providers } from "../data/providers";
 
 const AppContext = createContext();
 
-export function AppProvider({ children }) {
-  const [requests, setRequests] = useState(() => {
-    const saved = localStorage.getItem("service_requests");
-    return saved ? JSON.parse(saved) : [];
-  });
+function readStoredValue(key, fallback) {
+  try {
+    const saved = localStorage.getItem(key);
+    const parsed = saved ? JSON.parse(saved) : fallback;
+    if (key === "service_requests" && !Array.isArray(parsed)) return fallback;
+    if (key === "smartservice_user" && (parsed === null || typeof parsed !== "object" || Array.isArray(parsed))) {
+      return fallback;
+    }
+    return parsed;
+  } catch {
+    localStorage.removeItem(key);
+    return fallback;
+  }
+}
 
-  const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem("smartservice_user");
-    return saved ? JSON.parse(saved) : null;
-  });
+export function AppProvider({ children }) {
+  const [requests, setRequests] = useState(() =>
+    readStoredValue("service_requests", [])
+  );
+
+  const [currentUser, setCurrentUser] = useState(() =>
+    readStoredValue("smartservice_user", null)
+  );
 
   useEffect(() => {
     localStorage.setItem("service_requests", JSON.stringify(requests));
@@ -32,6 +45,7 @@ export function AppProvider({ children }) {
     const newRequest = {
       ...request,
       id: Date.now().toString(),
+      ownerEmail: currentUser?.email,
       status: "Requested",
       createdAt: new Date().toISOString(),
     };
@@ -55,6 +69,20 @@ export function AppProvider({ children }) {
     );
   };
 
+  const rateRequest = (id, rating, review) => {
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return false;
+    }
+    setRequests((prev) =>
+      prev.map((req) =>
+        req.id === id && req.ownerEmail === currentUser?.email && req.status === "Completed" && !req.rating
+          ? { ...req, rating, review: review.trim(), ratedAt: new Date().toISOString() }
+          : req
+      )
+    );
+    return true;
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -62,6 +90,7 @@ export function AppProvider({ children }) {
         addRequest,
         updateRequestStatus,
         acceptRequest,
+        rateRequest,
         currentUser,
         login,
         logout,

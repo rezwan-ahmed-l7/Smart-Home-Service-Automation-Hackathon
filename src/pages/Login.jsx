@@ -7,9 +7,9 @@ const initialForm = { username: "", phone: "", email: "", password: "" };
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useApp();
+  const { login, providers } = useApp();
   const [role, setRole] = useState("customer");
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState({ ...initialForm, providerId: providers[0]?.id || "" });
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -19,10 +19,11 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     login({
-      username: form.username,
+      username: form.username.trim(),
       phone: form.phone,
-      email: form.email.toLowerCase(),
+      email: form.email.trim().toLowerCase(),
       role,
+      providerId: role === "provider" ? form.providerId : null,
     });
     navigate(role === "provider" ? "/provider" : "/");
   };
@@ -62,11 +63,22 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4 mt-6">
             <label className="login-field">
               <span>Username</span>
-              <div><UserRound size={17} /><input className="field" name="username" value={form.username} onChange={handleChange} placeholder="Your username" required /></div>
+              <div><UserRound size={17} /><input className="field" name="username" value={form.username} onChange={handleChange} placeholder="Your username" minLength={2} pattern="[A-Za-z0-9_ ]+" title="Use letters, numbers, spaces, or underscores" required /></div>
             </label>
+            {role === "provider" && (
+              <label className="login-field">
+                <span>Provider profile</span>
+                <div>
+                  <Wrench size={17} />
+                  <select className="field" name="providerId" value={form.providerId} onChange={handleChange} required>
+                    {providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name}</option>)}
+                  </select>
+                </div>
+              </label>
+            )}
             <label className="login-field">
               <span>Phone number</span>
-              <div><Phone size={17} /><input className="field" type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="01XXXXXXXXX" required /></div>
+              <div><Phone size={17} /><input className="field" type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="01XXXXXXXXX" pattern="[0-9]{11}" title="Enter exactly 11 digits" required /></div>
             </label>
             <label className="login-field">
               <span>Gmail address</span>

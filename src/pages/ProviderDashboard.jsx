@@ -1,20 +1,41 @@
+import { useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
-import { Clock, MapPin, Phone, User, CheckCircle, Truck, Play, Check } from "lucide-react";
+import { Clock, MapPin, Phone, User, CheckCircle, Truck, Play, Check, Search, SlidersHorizontal } from "lucide-react";
 
 const statusFlow = ["Requested", "Accepted", "On the Way", "In Progress", "Completed"];
 
 export default function ProviderDashboard() {
-  const { requests, updateRequestStatus, acceptRequest, providers } = useApp();
-
-  // Show only requests that are still open or assigned
-  const incomingRequests = requests.filter(
-    (r) => r.status === "Requested" || r.status === "Accepted" || r.status === "On the Way" || r.status === "In Progress"
+  const { requests, updateRequestStatus, acceptRequest, currentUser } = useApp();
+  const [view, setView] = useState("active");
+  const [search, setSearch] = useState("");
+  const [urgency, setUrgency] = useState("All");
+  const [sort, setSort] = useState("newest");
+  const providerRequests = requests.filter(
+    (request) => request.assignedProviderId === currentUser.providerId ||
+      (request.status === "Requested" && request.matchedProviders?.some((provider) => provider.id === currentUser.providerId))
   );
 
+  const incomingRequests = useMemo(() => providerRequests
+    .filter((request) => view === "active"
+      ? ["Requested", "Accepted", "On the Way", "In Progress"].includes(request.status)
+      : ["Completed", "Rejected"].includes(request.status))
+    .filter((request) => urgency === "All" || request.urgency === urgency)
+    .filter((request) => `${request.serviceName} ${request.contactName} ${request.location}`.toLowerCase().includes(search.trim().toLowerCase()))
+    .sort((a, b) => sort === "urgent"
+      ? ({ Emergency: 0, Urgent: 1, Normal: 2 }[a.urgency] - ({ Emergency: 0, Urgent: 1, Normal: 2 }[b.urgency]))
+      : new Date(b.createdAt) - new Date(a.createdAt)), [providerRequests, view, urgency, search, sort]);
+
+  const stats = {
+    active: providerRequests.filter((request) => !["Completed", "Rejected"].includes(request.status)).length,
+    completed: providerRequests.filter((request) => request.status === "Completed").length,
+    rating: providerRequests.filter((request) => request.rating).length
+      ? (providerRequests.filter((request) => request.rating).reduce((total, request) => total + request.rating, 0) /
+        providerRequests.filter((request) => request.rating).length).toFixed(1)
+      : "—",
+  };
+
   const handleAccept = (requestId) => {
-    // For demo, assign first matched provider or a default one
-    const request = requests.find((r) => r.id === requestId);
-    const providerId = request?.matchedProviders?.[0]?.id || providers[0]?.id;
+    const providerId = currentUser.providerId;
     acceptRequest(requestId, providerId);
   };
 
@@ -41,6 +62,35 @@ export default function ProviderDashboard() {
         <p className="eyebrow">Professional workspace</p>
         <h1 className="page-title text-4xl">Provider Dashboard</h1>
         <p className="page-subtitle mt-2">Manage incoming service requests with confidence.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <div className="surface p-4"><p className="text-xs text-gray-500">Active jobs</p><p className="text-2xl font-bold text-gray-900 mt-1">{stats.active}</p></div>
+        <div className="surface p-4"><p className="text-xs text-gray-500">Completed</p><p className="text-2xl font-bold text-gray-900 mt-1">{stats.completed}</p></div>
+        <div className="surface p-4"><p className="text-xs text-gray-500">Customer rating</p><p className="text-2xl font-bold text-gray-900 mt-1">{stats.rating}</p></div>
+      </div>
+      <div className="surface p-4 mb-6">
+        <div className="flex flex-col lg:flex-row gap-3">
+          <label className="relative flex-1">
+            <Search size={17} className="absolute left-3.5 top-3.5 text-gray-400" />
+            <input className="field px-4 py-3 pl-10" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search requests" aria-label="Search requests" />
+          </label>
+          <label className="select-field">
+            <SlidersHorizontal size={16} />
+            <select className="field px-3 py-3" value={view} onChange={(event) => setView(event.target.value)} aria-label="Request view">
+              <option value="active">Active jobs</option><option value="history">Job history</option>
+            </select>
+          </label>
+          <div className="select-field bare-select lg:w-40">
+            <select className="field px-3 py-3" value={urgency} onChange={(event) => setUrgency(event.target.value)} aria-label="Filter urgency">
+              <option>All</option><option>Emergency</option><option>Urgent</option><option>Normal</option>
+            </select>
+          </div>
+          <div className="select-field bare-select lg:w-40">
+            <select className="field px-3 py-3" value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort requests">
+              <option value="newest">Newest first</option><option value="urgent">Urgency first</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {incomingRequests.length === 0 ? (

@@ -5,8 +5,8 @@ import { Star, MapPin, Clock, Phone, CheckCircle } from "lucide-react";
 export default function MatchResult() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { requests, acceptRequest } = useApp();
-  const request = requests.find((r) => r.id === id);
+  const { requests, acceptRequest, currentUser } = useApp();
+  const request = requests.find((r) => r.id === id && r.ownerEmail && r.ownerEmail === currentUser.email);
 
   if (!request) {
     return (
@@ -40,7 +40,7 @@ export default function MatchResult() {
       )}
 
       <div className="space-y-4">
-        {request.matchedProviders?.map((provider, index) => (
+        {request.matchedProviders?.length ? request.matchedProviders.map((provider, index) => (
           <div
             key={provider.id}
             className="surface p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-indigo-300 transition"
@@ -83,7 +83,17 @@ export default function MatchResult() {
               ) : null}
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="surface p-8 text-center">
+            <h2 className="font-semibold text-gray-900">No providers are available yet</h2>
+            <p className="text-sm text-gray-500 mt-2">
+              Try another service or submit this request again later.
+            </p>
+            <Link to="/" className="primary-button mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold">
+              Request another service
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="mt-8 flex gap-4">

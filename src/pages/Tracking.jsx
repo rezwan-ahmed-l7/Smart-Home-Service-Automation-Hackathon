@@ -1,13 +1,17 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { CheckCircle, Circle, MapPin, Clock, User, Phone } from "lucide-react";
+import { CheckCircle, Circle, MapPin, Clock, User, Phone, Star } from "lucide-react";
 
 const statusSteps = ["Requested", "Accepted", "On the Way", "In Progress", "Completed"];
 
 export default function Tracking() {
   const { id } = useParams();
-  const { requests, providers } = useApp();
-  const request = requests.find((r) => r.id === id);
+  const { requests, providers, currentUser, rateRequest } = useApp();
+  const request = requests.find((r) => r.id === id && r.ownerEmail && r.ownerEmail === currentUser.email);
+  const [selectedRating, setSelectedRating] = useState(request?.rating || 0);
+  const [review, setReview] = useState(request?.review || "");
+  const [ratingError, setRatingError] = useState("");
 
   if (!request) {
     return (
@@ -22,6 +26,7 @@ export default function Tracking() {
 
   const currentIndex = statusSteps.indexOf(request.status);
   const assignedProvider = providers.find((p) => p.id === request.assignedProviderId);
+  const isRejected = request.status === "Rejected";
 
   return (
     <div className="page-wrap max-w-3xl">
@@ -34,6 +39,11 @@ export default function Tracking() {
       {/* Status Timeline */}
       <div className="surface p-6 sm:p-7 mb-6">
         <h2 className="font-semibold text-gray-900 mb-5">Status</h2>
+        {isRejected && (
+          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 mb-4">
+            This request was declined. Please create a new request to find another provider.
+          </p>
+        )}
         <div className="space-y-4">
           {statusSteps.map((step, index) => {
             const isCompleted = index <= currentIndex;
@@ -109,18 +119,51 @@ export default function Tracking() {
       {/* Rating (only when Completed) */}
       {request.status === "Completed" && (
         <div className="surface p-6 sm:p-7 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-3">Rate this service</h2>
-          <div className="flex gap-2">
+          <h2 className="font-semibold text-gray-900 mb-3">
+            {request.rating ? "Your service rating" : "Rate this service"}
+          </h2>
+          <div className="flex gap-1" aria-label="Service rating">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
+                type="button"
                 key={star}
-                className="text-2xl text-yellow-400 hover:scale-110 transition"
-                onClick={() => alert(`Thanks for rating ${star} stars!`)}
+                disabled={Boolean(request.rating)}
+                aria-label={`${star} star${star > 1 ? "s" : ""}`}
+                className={`rating-star ${star <= selectedRating ? "selected" : ""}`}
+                onClick={() => setSelectedRating(star)}
               >
-                ★
+                <Star size={22} fill={star <= selectedRating ? "currentColor" : "none"} />
               </button>
             ))}
           </div>
+          {!request.rating ? (
+            <>
+              <textarea
+                className="field px-4 py-3 mt-4 resize-none"
+                rows={3}
+                maxLength={500}
+                value={review}
+                onChange={(event) => setReview(event.target.value)}
+                placeholder="Tell us how the service went (optional)"
+              />
+              {ratingError && <p className="text-sm text-red-600 mt-2" role="alert">{ratingError}</p>}
+              <button
+                type="button"
+                className="primary-button mt-3 px-5 py-2.5 rounded-xl text-sm font-semibold"
+                onClick={() => {
+                  if (!selectedRating) {
+                    setRatingError("Please select between 1 and 5 stars.");
+                    return;
+                  }
+                  rateRequest(id, selectedRating, review);
+                }}
+              >
+                Submit rating
+              </button>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500 mt-2">{request.review || "Thanks for sharing your feedback."}</p>
+          )}
         </div>
       )}
 

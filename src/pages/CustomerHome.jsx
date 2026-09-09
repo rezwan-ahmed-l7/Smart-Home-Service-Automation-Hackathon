@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Wrench, Droplets, Zap, Sparkles, Home, Truck, Car, User,
-  MapPin, Calendar, Clock, AlertCircle, FileText, Phone, Image as ImageIcon
+  MapPin, Calendar, Clock, AlertCircle, FileText, Phone, Image as ImageIcon, Search
 } from "lucide-react";
 import { serviceCategories } from "../data/services";
 import { useApp } from "../context/AppContext";
@@ -18,6 +18,8 @@ export default function CustomerHome() {
 
   const [step, setStep] = useState(1); // 1 = select service, 2 = form
   const [selectedService, setSelectedService] = useState(null);
+  const [search, setSearch] = useState("");
+  const [formError, setFormError] = useState("");
 
   const [form, setForm] = useState({
     location: "",
@@ -43,15 +45,35 @@ export default function CustomerHome() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.location || !form.preferredDate || !form.preferredTime || !form.contactName || !form.contactPhone) {
-      alert("Please fill all required fields");
+    const phone = form.contactPhone.trim();
+    if (!/^\d{11}$/.test(phone)) {
+      setFormError("Phone number must contain exactly 11 digits.");
       return;
     }
+    if (!/^[a-zA-Z][a-zA-Z .'-]{1,59}$/.test(form.contactName.trim())) {
+      setFormError("Name must contain letters and spaces only.");
+      return;
+    }
+    if (new Date(`${form.preferredDate}T23:59:59`) < new Date()) {
+      setFormError("Preferred date must be today or a future date.");
+      return;
+    }
+    setFormError("");
 
     const requestData = {
       serviceId: selectedService.id,
       serviceName: selectedService.name,
       ...form,
+      location: form.location.trim(),
+      contactName: form.contactName.trim(),
+      contactPhone: phone,
+      image: form.image
+        ? {
+            name: form.image.name,
+            type: form.image.type,
+            size: form.image.size,
+          }
+        : null,
     };
 
     // Get matched providers
@@ -76,10 +98,22 @@ export default function CustomerHome() {
           <p className="eyebrow">Reliable help, beautifully simple</p>
           <h1 className="page-title">Make home feel effortless.</h1>
           <p className="page-subtitle mt-3">Tell us what you need and we’ll connect you with a trusted local professional.</p>
+          <label className="relative block mt-6 max-w-xl">
+            <Search size={18} className="absolute left-4 top-3.5 text-gray-400" />
+            <input
+              className="field px-4 py-3 pl-11"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search services, e.g. plumbing or cleaning"
+              aria-label="Search services"
+            />
+          </label>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {serviceCategories.map((service) => {
+          {serviceCategories.filter((service) =>
+            `${service.name} ${service.description}`.toLowerCase().includes(search.trim().toLowerCase())
+          ).map((service) => {
             const Icon = iconMap[service.icon] || Wrench;
             return (
               <button
@@ -96,6 +130,9 @@ export default function CustomerHome() {
             );
           })}
         </div>
+        {serviceCategories.filter((service) =>
+          `${service.name} ${service.description}`.toLowerCase().includes(search.trim().toLowerCase())
+        ).length === 0 && <p className="text-gray-500 mt-6">No services match your search.</p>}
       </div>
     );
   }
@@ -130,6 +167,7 @@ export default function CustomerHome() {
             placeholder="e.g. Dhanmondi, Dhaka"
             className="field px-4 py-3"
             required
+            minLength={2}
           />
         </div>
 
@@ -139,40 +177,45 @@ export default function CustomerHome() {
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
               <Calendar size={16} /> Preferred Date *
             </label>
-            <input
-              type="date"
-              name="preferredDate"
-              value={form.preferredDate}
-              onChange={handleChange}
-              className="field px-4 py-3"
-              required
-            />
+            <div className="control-wrap calendar-control">
+              <input
+                type="date"
+                name="preferredDate"
+                value={form.preferredDate}
+                onChange={handleChange}
+                className="field px-4 py-3"
+                required
+                min={new Date().toISOString().split("T")[0]}
+              />
+            </div>
           </div>
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
               <Clock size={16} /> Preferred Time *
             </label>
-            <select
-              name="preferredTime"
-              value={form.preferredTime}
-              onChange={handleChange}
-              className="field px-4 py-3"
-              required
-            >
-              <option value="">Select time</option>
-              <option value="9:00 AM">9:00 AM</option>
-              <option value="10:00 AM">10:00 AM</option>
-              <option value="11:00 AM">11:00 AM</option>
-              <option value="12:00 PM">12:00 PM</option>
-              <option value="1:00 PM">1:00 PM</option>
-              <option value="2:00 PM">2:00 PM</option>
-              <option value="3:00 PM">3:00 PM</option>
-              <option value="4:00 PM">4:00 PM</option>
-              <option value="4:30 PM">4:30 PM</option>
-              <option value="5:00 PM">5:00 PM</option>
-              <option value="6:00 PM">6:00 PM</option>
-              <option value="7:00 PM">7:00 PM</option>
-            </select>
+            <div className="select-field bare-select">
+              <select
+                name="preferredTime"
+                value={form.preferredTime}
+                onChange={handleChange}
+                className="field px-4 py-3"
+                required
+              >
+                <option value="">Select time</option>
+                <option value="9:00 AM">9:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="12:00 PM">12:00 PM</option>
+                <option value="1:00 PM">1:00 PM</option>
+                <option value="2:00 PM">2:00 PM</option>
+                <option value="3:00 PM">3:00 PM</option>
+                <option value="4:00 PM">4:00 PM</option>
+                <option value="4:30 PM">4:30 PM</option>
+                <option value="5:00 PM">5:00 PM</option>
+                <option value="6:00 PM">6:00 PM</option>
+                <option value="7:00 PM">7:00 PM</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -219,6 +262,7 @@ export default function CustomerHome() {
         </div>
 
         {/* Contact */}
+        {formError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{formError}</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
@@ -232,6 +276,8 @@ export default function CustomerHome() {
               placeholder="Full name"
               className="field px-4 py-3"
               required
+              pattern="[A-Za-z][A-Za-z .'-]{1,59}"
+              title="Use letters and spaces only"
             />
           </div>
           <div>
@@ -246,6 +292,8 @@ export default function CustomerHome() {
               placeholder="01XXXXXXXXX"
               className="field px-4 py-3"
               required
+              pattern="[0-9]{11}"
+              title="Enter exactly 11 digits"
             />
           </div>
         </div>
@@ -259,7 +307,7 @@ export default function CustomerHome() {
             type="file"
             accept="image/*"
             onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.files[0] }))}
-            className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+            className="file-field"
           />
         </div>
 
