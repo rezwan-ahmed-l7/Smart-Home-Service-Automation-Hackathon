@@ -7,6 +7,8 @@ import {
 import { serviceCategories } from "../data/services";
 import { useApp } from "../context/AppContext";
 import { getMatchedProviders } from "../utils/matching";
+import GlassSelect from "../components/GlassSelect";
+import GlassDatePicker from "../components/GlassDatePicker";
 
 const iconMap = {
   Wrench, Droplets, Zap, Sparkles, Home, Truck, Car, User
@@ -45,6 +47,10 @@ export default function CustomerHome() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!form.location.trim() || !form.preferredDate || !form.preferredTime || !form.contactName.trim() || !form.contactPhone.trim()) {
+      setFormError("Please complete all required fields.");
+      return;
+    }
     const phone = form.contactPhone.trim();
     if (!/^\d{11}$/.test(phone)) {
       setFormError("Phone number must contain exactly 11 digits.");
@@ -177,45 +183,27 @@ export default function CustomerHome() {
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
               <Calendar size={16} /> Preferred Date *
             </label>
-            <div className="control-wrap calendar-control">
-              <input
-                type="date"
-                name="preferredDate"
-                value={form.preferredDate}
-                onChange={handleChange}
-                className="field px-4 py-3"
-                required
-                min={new Date().toISOString().split("T")[0]}
-              />
-            </div>
+            <GlassDatePicker
+              value={form.preferredDate}
+              onChange={(preferredDate) => setForm((previous) => ({ ...previous, preferredDate }))}
+              min={new Date().toISOString().split("T")[0]}
+              ariaLabel="Preferred date"
+            />
           </div>
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
               <Clock size={16} /> Preferred Time *
             </label>
-            <div className="select-field bare-select">
-              <select
-                name="preferredTime"
-                value={form.preferredTime}
-                onChange={handleChange}
-                className="field px-4 py-3"
-                required
-              >
-                <option value="">Select time</option>
-                <option value="9:00 AM">9:00 AM</option>
-                <option value="10:00 AM">10:00 AM</option>
-                <option value="11:00 AM">11:00 AM</option>
-                <option value="12:00 PM">12:00 PM</option>
-                <option value="1:00 PM">1:00 PM</option>
-                <option value="2:00 PM">2:00 PM</option>
-                <option value="3:00 PM">3:00 PM</option>
-                <option value="4:00 PM">4:00 PM</option>
-                <option value="4:30 PM">4:30 PM</option>
-                <option value="5:00 PM">5:00 PM</option>
-                <option value="6:00 PM">6:00 PM</option>
-                <option value="7:00 PM">7:00 PM</option>
-              </select>
-            </div>
+            <GlassSelect
+              value={form.preferredTime}
+              onChange={(preferredTime) => setForm((previous) => ({ ...previous, preferredTime }))}
+              options={[
+                { value: "", label: "Select time" },
+                ...["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "4:30 PM", "5:00 PM", "6:00 PM", "7:00 PM"].map((time) => ({ value: time, label: time })),
+              ]}
+              ariaLabel="Preferred time"
+              className="bare-select"
+            />
           </div>
         </div>
 

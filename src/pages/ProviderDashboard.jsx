@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { Clock, MapPin, Phone, User, CheckCircle, Truck, Play, Check, Search, SlidersHorizontal } from "lucide-react";
+import GlassSelect from "../components/GlassSelect";
 
 const statusFlow = ["Requested", "Accepted", "On the Way", "In Progress", "Completed"];
 
@@ -74,22 +75,15 @@ export default function ProviderDashboard() {
             <Search size={17} className="absolute left-3.5 top-3.5 text-gray-400" />
             <input className="field px-4 py-3 pl-10" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search requests" aria-label="Search requests" />
           </label>
-          <label className="select-field">
-            <SlidersHorizontal size={16} />
-            <select className="field px-3 py-3" value={view} onChange={(event) => setView(event.target.value)} aria-label="Request view">
-              <option value="active">Active jobs</option><option value="history">Job history</option>
-            </select>
-          </label>
-          <div className="select-field bare-select lg:w-40">
-            <select className="field px-3 py-3" value={urgency} onChange={(event) => setUrgency(event.target.value)} aria-label="Filter urgency">
-              <option>All</option><option>Emergency</option><option>Urgent</option><option>Normal</option>
-            </select>
-          </div>
-          <div className="select-field bare-select lg:w-40">
-            <select className="field px-3 py-3" value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort requests">
-              <option value="newest">Newest first</option><option value="urgent">Urgency first</option>
-            </select>
-          </div>
+          <GlassSelect value={view} onChange={setView} ariaLabel="Request view" icon={SlidersHorizontal} options={[
+            { value: "active", label: "Active jobs" }, { value: "history", label: "Job history" },
+          ]} />
+          <GlassSelect value={urgency} onChange={setUrgency} ariaLabel="Filter urgency" className="bare-select lg:w-40" options={[
+            { value: "All", label: "All" }, { value: "Emergency", label: "Emergency" }, { value: "Urgent", label: "Urgent" }, { value: "Normal", label: "Normal" },
+          ]} />
+          <GlassSelect value={sort} onChange={setSort} ariaLabel="Sort requests" className="bare-select lg:w-40" options={[
+            { value: "newest", label: "Newest first" }, { value: "urgent", label: "Urgency first" },
+          ]} />
         </div>
       </div>
 

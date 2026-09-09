@@ -75,7 +75,30 @@ button { cursor: pointer; }
   -webkit-backdrop-filter: blur(12px);
 }
 .field:disabled { cursor: not-allowed; opacity: .7; }
-.field option { color: #172033; background: #fff; padding: 10px; }
+.field {
+  color-scheme: light;
+}
+.field option {
+  color: #252044;
+  background: #f6f5ff;
+  padding: 10px 12px;
+}
+.field option:checked {
+  color: #ffffff;
+  background: #6366f1;
+}
+.field option:hover {
+  color: #252044;
+  background: #e9e7ff;
+}
+.select-field .field,
+.login-field .select-field .field {
+  background-color: rgba(255, 255, 255, .58);
+}
+.select-field .field:focus,
+.login-field .select-field .field:focus {
+  background-color: rgba(255, 255, 255, .82);
+}
 .field::placeholder { color: #9aa2b3; }
 .field[type="date"] { color-scheme: light; padding-right: 42px; }
 .field[type="date"]::-webkit-calendar-picker-indicator {
@@ -91,20 +114,86 @@ button { cursor: pointer; }
 .calendar-control::after { display: none; }
 .select-field { position: relative; display: flex; align-items: center; min-width: 170px; }
 .select-field > svg { position: absolute; left: 13px; z-index: 1; color: #8b93a5; pointer-events: none; }
-.select-field .field { padding-left: 38px; appearance: none; }
+.select-field .field { padding-left: 38px; padding-right: 38px; appearance: none; cursor: pointer; }
 .select-field.bare-select .field { padding-left: 12px; padding-right: 38px; }
+.select-field.login-select { width: 100%; min-width: 0; }
+.select-field.login-select .field { padding-left: 40px; }
 .select-field::after {
   content: ""; position: absolute; right: 14px; width: 7px; height: 7px;
   border-right: 2px solid #7b8292; border-bottom: 2px solid #7b8292;
   transform: rotate(45deg) translateY(-2px); pointer-events: none;
 }
-.login-field select.field { appearance: none; }
-.login-field select.field { padding-right: 38px; }
-.login-field > div:has(select)::after {
-  content: ""; position: absolute; right: 15px; top: 17px; width: 7px; height: 7px;
-  border-right: 2px solid #7b8292; border-bottom: 2px solid #7b8292;
-  transform: rotate(45deg); pointer-events: none;
+.select-field:focus-within::after { border-color: #4f46e5; }
+.glass-select { position: relative; min-width: 170px; }
+.glass-select.login-select { width: 100%; min-width: 0; }
+.glass-select.bare-select .glass-select-trigger { padding-left: 12px; }
+.glass-select-trigger {
+  width: 100%; min-height: 48px; display: flex; align-items: center; gap: 10px;
+  padding: 12px 38px 12px 14px; border: 1px solid rgba(255, 255, 255, .72);
+  border-radius: 12px; color: #172033; background: rgba(255, 255, 255, .42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45); backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%); text-align: left; cursor: pointer;
+  transition: .2s ease;
 }
+.glass-select-trigger:hover, .glass-select.open .glass-select-trigger {
+  border-color: #a5a3f8; background: rgba(255, 255, 255, .62);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, .1), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+.glass-select-icon { color: #8b93a5; flex: 0 0 auto; }
+.glass-select-chevron { position: absolute; right: 13px; color: #6f7191; transition: transform .2s ease; }
+.glass-select.open .glass-select-chevron { transform: rotate(180deg); color: #4f46e5; }
+.glass-select-menu {
+  position: absolute; z-index: 70; top: calc(100% + 8px); left: 0; width: 100%;
+  padding: 7px; border: 1px solid rgba(255, 255, 255, .72); border-radius: 16px;
+  background: rgba(244, 244, 255, .64); box-shadow: 0 18px 40px rgba(47, 42, 120, .2), inset 0 1px 0 rgba(255, 255, 255, .72);
+  backdrop-filter: blur(26px) saturate(165%); -webkit-backdrop-filter: blur(26px) saturate(165%);
+  max-height: 260px; overflow-y: auto;
+}
+.glass-select-option {
+  width: 100%; display: block; padding: 10px 12px; border: 0; border-radius: 10px;
+  color: #403c68; background: transparent; text-align: left; font-size: .9rem; cursor: pointer;
+  transition: .15s ease;
+}
+.glass-select-option:hover, .glass-select-option:focus-visible { color: #3730a3; background: rgba(224, 222, 255, .72); outline: none; }
+.glass-select-option.selected { color: #fff; background: linear-gradient(135deg, rgba(88, 86, 232, .92), rgba(124, 58, 237, .88)); box-shadow: 0 5px 12px rgba(99, 102, 241, .2); }
+.glass-date-picker { position: relative; width: 100%; }
+.glass-date-trigger {
+  width: 100%; min-height: 48px; display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border: 1px solid rgba(255, 255, 255, .72); border-radius: 12px;
+  color: #172033; background: rgba(255, 255, 255, .42); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45);
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  text-align: left; cursor: pointer; transition: .2s ease;
+}
+.glass-date-trigger:hover, .glass-date-picker:has(.glass-calendar) .glass-date-trigger {
+  border-color: #a5a3f8; background: rgba(255, 255, 255, .62);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, .1), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+.glass-date-trigger > svg:first-child { color: #8b93a5; }
+.glass-date-trigger .placeholder { color: #9aa2b3; }
+.glass-date-chevron { margin-left: auto; color: #6f7191; transition: transform .2s ease; }
+.glass-date-chevron.open { transform: rotate(90deg); color: #4f46e5; }
+.glass-calendar {
+  position: absolute; z-index: 70; top: calc(100% + 8px); left: 0; width: min(100%, 310px);
+  padding: 14px; border: 1px solid rgba(255, 255, 255, .72); border-radius: 18px;
+  background: rgba(244, 244, 255, .64); box-shadow: 0 18px 40px rgba(47, 42, 120, .2), inset 0 1px 0 rgba(255, 255, 255, .72);
+  backdrop-filter: blur(26px) saturate(165%); -webkit-backdrop-filter: blur(26px) saturate(165%);
+}
+.glass-calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; color: #302b62; }
+.glass-calendar-header strong { font-size: .9rem; }
+.glass-calendar-header button {
+  display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 9px;
+  color: #5b55c9; background: rgba(255, 255, 255, .42);
+}
+.glass-calendar-header button:hover { background: rgba(224, 222, 255, .76); }
+.glass-calendar-header button:disabled { opacity: .35; cursor: not-allowed; }
+.glass-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.glass-calendar-weekday { padding: 4px 0; color: #8585a6; font-size: .68rem; font-weight: 800; text-align: center; }
+.glass-calendar-day {
+  min-height: 32px; border: 0; border-radius: 9px; color: #403c68; background: transparent; font-size: .82rem;
+}
+.glass-calendar-day:not(:disabled):hover { color: #3730a3; background: rgba(224, 222, 255, .72); }
+.glass-calendar-day.selected { color: #fff; background: linear-gradient(135deg, rgba(88, 86, 232, .94), rgba(124, 58, 237, .9)); box-shadow: 0 5px 12px rgba(99, 102, 241, .22); }
+.glass-calendar-day:disabled { color: #b7b7c8; cursor: not-allowed; }
 .rating-star { color: #c4cad6; transition: .18s ease; }
 .rating-star:hover, .rating-star.selected { color: #f59e0b; transform: translateY(-1px); }
 .file-field {
@@ -142,6 +231,7 @@ button { cursor: pointer; }
 .login-field > div { position: relative; }
 .login-field svg { position: absolute; z-index: 1; top: 14px; left: 13px; color: #a0a7b7; }
 .login-field .field { padding: 12px 14px 12px 40px; }
+.login-field .select-field .field { padding-right: 38px; }
 @media (max-width: 800px) {
   .login-page { display: block; }
   .login-showcase { min-height: 330px; padding: 26px 20px; }
@@ -154,4 +244,7 @@ button { cursor: pointer; }
   .header-inner .nav-link { padding: 8px; font-size: 0; }
   .header-inner .nav-link svg { width: 19px; height: 19px; }
   .page-wrap { padding: 36px 16px 56px; }
+  .select-field { min-width: 0; width: 100%; }
+  .select-field.bare-select { flex: 1 1 100%; }
+  .glass-select { min-width: 0; width: 100%; }
 }

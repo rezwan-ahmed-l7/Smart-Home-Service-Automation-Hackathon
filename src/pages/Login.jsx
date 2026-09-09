@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, AtSign, LockKeyhole, Phone, ShieldCheck, UserRound, Wrench } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import GlassSelect from "../components/GlassSelect";
 
 const initialForm = { username: "", phone: "", email: "", password: "" };
 
@@ -68,12 +69,14 @@ export default function Login() {
             {role === "provider" && (
               <label className="login-field">
                 <span>Provider profile</span>
-                <div>
-                  <Wrench size={17} />
-                  <select className="field" name="providerId" value={form.providerId} onChange={handleChange} required>
-                    {providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name}</option>)}
-                  </select>
-                </div>
+                <GlassSelect
+                  value={form.providerId}
+                  onChange={(providerId) => setForm((previous) => ({ ...previous, providerId }))}
+                  options={providers.map((provider) => ({ value: provider.id, label: provider.name }))}
+                  ariaLabel="Provider profile"
+                  icon={Wrench}
+                  className="login-select"
+                />
               </label>
             )}
             <label className="login-field">
