@@ -11,6 +11,7 @@ export default function Login() {
   const { login, providers } = useApp();
   const [role, setRole] = useState("customer");
   const [form, setForm] = useState({ ...initialForm, providerId: providers[0]?.id || "" });
+  const [loginError, setLoginError] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -19,6 +20,11 @@ export default function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (form.password !== "123456") {
+      setLoginError("Demo mode uses password 123456.");
+      return;
+    }
+    setLoginError("");
     login({
       username: form.username.trim(),
       phone: form.phone,
@@ -60,6 +66,12 @@ export default function Login() {
               <Wrench size={16} /> Provider
             </button>
           </div>
+          <div className="demo-credentials" role="note">
+            <strong>Demo credentials</strong>
+            <span>Customer: any name + 11-digit phone + @gmail.com</span>
+            <span>Provider: choose a profile + the same details</span>
+            <span>Password: <b>123456</b></span>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-6">
             <label className="login-field">
@@ -94,6 +106,7 @@ export default function Login() {
             <button className="primary-button w-full rounded-xl py-3.5 font-bold mt-2" type="submit">
               Sign in as {role} <ArrowRight size={17} />
             </button>
+            {loginError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{loginError}</p>}
           </form>
           <p className="text-center text-xs text-gray-400 mt-6">By continuing, you agree to our Terms and Privacy Policy.</p>
         </div>

@@ -1,12 +1,15 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Star, MapPin, Clock, Phone, CheckCircle } from "lucide-react";
+import { getUrgencyBonus } from "../utils/matching";
 
 export default function MatchResult() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { requests, acceptRequest, currentUser } = useApp();
-  const request = requests.find((r) => r.id === id && r.ownerEmail && r.ownerEmail === currentUser.email);
+  const request = requests.find((r) => r.id === id && (
+    r.ownerEmail === currentUser?.email || r.ownerUsername === currentUser?.username
+  ));
 
   if (!request) {
     return (
@@ -18,8 +21,12 @@ export default function MatchResult() {
   }
 
   const handleSelectProvider = (providerId) => {
-    acceptRequest(id, providerId);
-    navigate(`/tracking/${id}`);
+    if (acceptRequest(id, providerId)) navigate(`/tracking/${id}`);
+  };
+
+  const handleAutoAssign = () => {
+    const bestProvider = request.matchedProviders?.[0];
+    if (bestProvider) handleSelectProvider(bestProvider.id);
   };
 
   return (
@@ -29,6 +36,17 @@ export default function MatchResult() {
       <p className="page-subtitle mb-10">
         For <span className="font-medium">{request.serviceName}</span> in {request.location}
       </p>
+      <div className="surface p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="text-sm text-gray-600">
+          <span className="font-semibold text-gray-900">{request.urgency}</span> priority adds{" "}
+          <span className="font-semibold text-indigo-600">+{getUrgencyBonus(request.urgency)} points</span> to every match.
+        </p>
+        {request.status === "Requested" && request.matchedProviders?.length > 0 && (
+          <button onClick={handleAutoAssign} className="primary-button px-4 py-2 rounded-xl text-sm font-semibold">
+            Auto Assign Best Provider
+          </button>
+        )}
+      </div>
 
       {request.status !== "Requested" && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
@@ -66,6 +84,7 @@ export default function MatchResult() {
               </div>
               <p className="text-sm text-gray-500 mt-1">
                 Match Score: <span className="font-medium text-green-600">{provider.matchScore}</span>
+                <span className="ml-2 text-indigo-600">(+{provider.urgencyBonus || 0} urgency)</span>
               </p>
             </div>
 

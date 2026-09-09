@@ -43,7 +43,11 @@ export default function ProviderDashboard() {
   const handleStatusUpdate = (requestId, currentStatus) => {
     const currentIndex = statusFlow.indexOf(currentStatus);
     if (currentIndex < statusFlow.length - 1) {
-      updateRequestStatus(requestId, statusFlow[currentIndex + 1]);
+      const nextStatus = statusFlow[currentIndex + 1];
+      if (nextStatus === "Completed" && !window.confirm("Are you sure you want to mark this job as completed?")) {
+        return;
+      }
+      updateRequestStatus(requestId, nextStatus);
     }
   };
 
@@ -89,12 +93,23 @@ export default function ProviderDashboard() {
 
       {incomingRequests.length === 0 ? (
         <div className="surface p-12 text-center">
-          <p className="text-gray-500">No incoming requests right now.</p>
+          <h2 className="font-semibold text-gray-900">No {view === "active" ? "active" : "historical"} requests</h2>
+          <p className="text-gray-500 mt-2">New matching customer requests will appear here.</p>
+          {view === "history" && (
+            <button type="button" onClick={() => setView("active")} className="primary-button mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold">
+              View active jobs
+            </button>
+          )}
+          {view === "active" && (search || urgency !== "All") && (
+            <button type="button" onClick={() => { setSearch(""); setUrgency("All"); }} className="primary-button mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold">
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-5">
           {incomingRequests.map((req) => (
-            <div key={req.id} className="surface p-6 sm:p-7">
+            <div key={req.id} className={`surface p-6 sm:p-7 ${req.urgency === "Emergency" ? "emergency-request" : ""}`}>
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
@@ -162,7 +177,11 @@ export default function ProviderDashboard() {
                       <CheckCircle size={16} /> Accept Job
                     </button>
                     <button
-                      onClick={() => updateRequestStatus(req.id, "Rejected")}
+                      onClick={() => {
+                        if (window.confirm("Are you sure you want to reject this request?")) {
+                          updateRequestStatus(req.id, "Rejected");
+                        }
+                      }}
                       className="border border-gray-300 text-gray-600 text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-gray-50 transition"
                     >
                       Reject

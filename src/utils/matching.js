@@ -1,3 +1,7 @@
+export function getUrgencyBonus(urgency) {
+  return { Emergency: 15, Urgent: 8, Normal: 0 }[urgency] || 0;
+}
+
 export function calculateMatchScore(provider, request) {
   let score = 0;
 
@@ -25,14 +29,22 @@ export function calculateMatchScore(provider, request) {
     score += 5; // still some points if other slots available
   }
 
+  score += getUrgencyBonus(request.urgency);
   return Math.round(score * 10) / 10;
 }
 
-export function getMatchedProviders(request, allProviders) {
+export function getMatchedProviders(request, allProviders, existingRequests = []) {
   return allProviders
+    .filter((provider) => !existingRequests.some((existing) =>
+      existing.assignedProviderId === provider.id &&
+      ["Accepted", "On the Way", "In Progress"].includes(existing.status) &&
+      existing.preferredDate === request.preferredDate &&
+      existing.preferredTime === request.preferredTime
+    ))
     .map((provider) => ({
       ...provider,
       matchScore: calculateMatchScore(provider, request),
+      urgencyBonus: getUrgencyBonus(request.urgency),
     }))
     .filter((p) => p.matchScore > 0)
     .sort((a, b) => b.matchScore - a.matchScore);

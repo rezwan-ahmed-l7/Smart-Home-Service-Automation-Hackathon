@@ -7,7 +7,7 @@ function readStoredValue(key, fallback) {
   try {
     const saved = localStorage.getItem(key);
     const parsed = saved ? JSON.parse(saved) : fallback;
-    if (key === "service_requests" && !Array.isArray(parsed)) return fallback;
+    if (["service_requests", "smartservice_booked_slots"].includes(key) && !Array.isArray(parsed)) return fallback;
     if (key === "smartservice_user" && (parsed === null || typeof parsed !== "object" || Array.isArray(parsed))) {
       return fallback;
     }
@@ -26,10 +26,23 @@ export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() =>
     readStoredValue("smartservice_user", null)
   );
+  const [bookedSlots, setBookedSlots] = useState(() =>
+    readStoredValue("smartservice_booked_slots", [])
+  );
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("service_requests", JSON.stringify(requests));
   }, [requests]);
+
+  useEffect(() => {
+    localStorage.setItem("smartservice_booked_slots", JSON.stringify(bookedSlots));
+  }, [bookedSlots]);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    window.setTimeout(() => setToast(null), 2500);
+  };
 
   const login = (user) => {
     setCurrentUser(user);
@@ -46,6 +59,7 @@ export function AppProvider({ children }) {
       ...request,
       id: Date.now().toString(),
       ownerEmail: currentUser?.email,
+      ownerUsername: currentUser?.username,
       status: "Requested",
       createdAt: new Date().toISOString(),
     };
@@ -57,16 +71,34 @@ export function AppProvider({ children }) {
     setRequests((prev) =>
       prev.map((req) => (req.id === id ? { ...req, status } : req))
     );
+    if (status === "Rejected") {
+      setBookedSlots((prev) => prev.filter((slot) => slot.requestId !== id));
+    }
+    showToast(`Request marked ${status.toLowerCase()}.`);
   };
 
   const acceptRequest = (id, providerId) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === id
-          ? { ...req, status: "Accepted", assignedProviderId: providerId }
-          : req
-      )
+    const request = requests.find((item) => item.id === id);
+    const slotIsBooked = requests.some((item) =>
+      item.id !== id &&
+      item.assignedProviderId === providerId &&
+      ["Accepted", "On the Way", "In Progress"].includes(item.status) &&
+      item.preferredDate === request?.preferredDate &&
+      item.preferredTime === request?.preferredTime
     );
+    if (!request || slotIsBooked) {
+      showToast("That provider is already booked for this time.", "error");
+      return false;
+    }
+    setRequests((prev) => prev.map((req) =>
+      req.id === id ? { ...req, status: "Accepted", assignedProviderId: providerId } : req
+    ));
+    setBookedSlots((prev) => [
+      ...prev.filter((slot) => slot.requestId !== id),
+      { requestId: id, providerId, date: request.preferredDate, time: request.preferredTime },
+    ]);
+    showToast("Provider accepted successfully.");
+    return true;
   };
 
   const rateRequest = (id, rating, review) => {
@@ -75,7 +107,9 @@ export function AppProvider({ children }) {
     }
     setRequests((prev) =>
       prev.map((req) =>
-        req.id === id && req.ownerEmail === currentUser?.email && req.status === "Completed" && !req.rating
+        req.id === id &&
+          (req.ownerEmail === currentUser?.email || req.ownerUsername === currentUser?.username) &&
+          req.status === "Completed" && !req.rating
           ? { ...req, rating, review: review.trim(), ratedAt: new Date().toISOString() }
           : req
       )
@@ -95,6 +129,9 @@ export function AppProvider({ children }) {
         login,
         logout,
         providers,
+        bookedSlots,
+        toast,
+        showToast,
       }}
     >
       {children}

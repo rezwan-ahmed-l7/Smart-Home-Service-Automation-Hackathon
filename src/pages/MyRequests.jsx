@@ -5,7 +5,9 @@ import { Clock, MapPin, ChevronRight } from "lucide-react";
 export default function MyRequests() {
   const { requests, currentUser } = useApp();
 
-  const sorted = requests.filter((request) => request.ownerEmail && request.ownerEmail === currentUser.email).sort(
+  const sorted = requests.filter((request) => (
+    request.ownerEmail === currentUser?.email || request.ownerUsername === currentUser?.username
+  )).sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
@@ -17,7 +19,8 @@ export default function MyRequests() {
 
       {sorted.length === 0 ? (
         <div className="surface p-12 text-center">
-          <p className="text-gray-500 mb-4">No requests yet.</p>
+          <h2 className="font-semibold text-gray-900">Nothing booked yet</h2>
+          <p className="text-gray-500 mt-2 mb-5">Start with a service request and track every update here.</p>
           <Link
             to="/"
             className="primary-button px-5 py-2.5 rounded-xl text-sm font-semibold"

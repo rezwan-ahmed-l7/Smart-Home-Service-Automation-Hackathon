@@ -7,8 +7,10 @@ const statusSteps = ["Requested", "Accepted", "On the Way", "In Progress", "Comp
 
 export default function Tracking() {
   const { id } = useParams();
-  const { requests, providers, currentUser, rateRequest } = useApp();
-  const request = requests.find((r) => r.id === id && r.ownerEmail && r.ownerEmail === currentUser.email);
+  const { requests, providers, currentUser, rateRequest, showToast } = useApp();
+  const request = requests.find((r) => r.id === id && (
+    r.ownerEmail === currentUser?.email || r.ownerUsername === currentUser?.username
+  ));
   const [selectedRating, setSelectedRating] = useState(request?.rating || 0);
   const [review, setReview] = useState(request?.review || "");
   const [ratingError, setRatingError] = useState("");
@@ -97,6 +99,12 @@ export default function Tracking() {
           {request.problemDetails && (
             <p className="bg-gray-50 rounded-xl p-3 mt-2">{request.problemDetails}</p>
           )}
+          {request.image?.dataUrl && (
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Attached photo</p>
+              <img src={request.image.dataUrl} alt="Attached service issue" className="max-h-44 w-auto rounded-xl border border-white/70 object-cover" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -118,6 +126,17 @@ export default function Tracking() {
 
       {/* Rating (only when Completed) */}
       {request.status === "Completed" && (
+        <>
+        <div className="surface p-6 sm:p-7 mb-6">
+          <h2 className="font-semibold text-gray-900 mb-4">Digital invoice</h2>
+          <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+            <span>Service</span><strong className="text-right text-gray-900">{request.serviceName}</strong>
+            <span>Provider</span><strong className="text-right text-gray-900">{assignedProvider?.name || "Assigned provider"}</strong>
+            <span>Date</span><strong className="text-right text-gray-900">{request.preferredDate}</strong>
+            <span>Estimated price</span><strong className="text-right text-gray-900">{assignedProvider?.priceRange || "To be confirmed"}</strong>
+            <span>Rating</span><strong className="text-right text-gray-900">{request.rating ? `${request.rating}/5` : "Not rated yet"}</strong>
+          </div>
+        </div>
         <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-3">
             {request.rating ? "Your service rating" : "Rate this service"}
@@ -155,7 +174,9 @@ export default function Tracking() {
                     setRatingError("Please select between 1 and 5 stars.");
                     return;
                   }
-                  rateRequest(id, selectedRating, review);
+                  if (rateRequest(id, selectedRating, review)) {
+                    showToast("Thanks — your rating was submitted.");
+                  }
                 }}
               >
                 Submit rating
@@ -165,6 +186,7 @@ export default function Tracking() {
             <p className="text-sm text-gray-500 mt-2">{request.review || "Thanks for sharing your feedback."}</p>
           )}
         </div>
+        </>
       )}
 
       <Link to="/" className="text-blue-600 hover:underline text-sm">

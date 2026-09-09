@@ -14,9 +14,14 @@ const iconMap = {
   Wrench, Droplets, Zap, Sparkles, Home, Truck, Car, User
 };
 
+function formatFileSize(bytes) {
+  if (!bytes) return "";
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
 export default function CustomerHome() {
   const navigate = useNavigate();
-  const { addRequest, providers } = useApp();
+  const { addRequest, providers, requests, currentUser } = useApp();
 
   const [step, setStep] = useState(1); // 1 = select service, 2 = form
   const [selectedService, setSelectedService] = useState(null);
@@ -44,7 +49,7 @@ export default function CustomerHome() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.location.trim() || !form.preferredDate || !form.preferredTime || !form.contactName.trim() || !form.contactPhone.trim()) {
@@ -66,6 +71,26 @@ export default function CustomerHome() {
     }
     setFormError("");
 
+    let image = null;
+    if (form.image) {
+      try {
+        image = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({
+            name: form.image.name,
+            type: form.image.type,
+            size: form.image.size,
+            dataUrl: reader.result,
+          });
+          reader.onerror = () => reject(new Error("Unable to read the selected image."));
+          reader.readAsDataURL(form.image);
+        });
+      } catch {
+        setFormError("The selected image could not be read. Please choose another image.");
+        return;
+      }
+    }
+
     const requestData = {
       serviceId: selectedService.id,
       serviceName: selectedService.name,
@@ -73,17 +98,13 @@ export default function CustomerHome() {
       location: form.location.trim(),
       contactName: form.contactName.trim(),
       contactPhone: phone,
-      image: form.image
-        ? {
-            name: form.image.name,
-            type: form.image.type,
-            size: form.image.size,
-          }
-        : null,
+      image,
+      ownerEmail: currentUser?.email,
+      ownerUsername: currentUser?.username,
     };
 
     // Get matched providers
-    const matched = getMatchedProviders(requestData, providers);
+    const matched = getMatchedProviders(requestData, providers, requests);
 
     // Save request
     const newRequest = addRequest({
@@ -264,7 +285,7 @@ export default function CustomerHome() {
               placeholder="Full name"
               className="field px-4 py-3"
               required
-              pattern="[A-Za-z][A-Za-z .'-]{1,59}"
+              pattern={"[A-Za-z][A-Za-z .'\\x2d]{1,59}"}
               title="Use letters and spaces only"
             />
           </div>
@@ -291,12 +312,26 @@ export default function CustomerHome() {
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
             <ImageIcon size={16} /> Photo (Optional)
           </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.files[0] }))}
-            className="file-field"
-          />
+          <div className="file-upload">
+            <input
+              id="service-photo"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.files?.[0] || null }))}
+              className="file-upload-input"
+            />
+            <label htmlFor="service-photo" className="file-upload-button">
+              {form.image ? "Change photo" : "Choose file"}
+            </label>
+            <div className="file-upload-details">
+              <span title={form.image?.name || undefined}>
+                {form.image
+                  ? `${form.image.name.slice(0, 24)}${form.image.name.length > 24 ? "…" : ""}`
+                  : "No photo selected"}
+              </span>
+              {form.image && <small>{formatFileSize(form.image.size)}</small>}
+            </div>
+          </div>
         </div>
 
         {/* Submit */}

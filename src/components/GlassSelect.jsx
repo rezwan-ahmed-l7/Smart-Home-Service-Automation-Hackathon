@@ -18,7 +18,14 @@ export default function GlassSelect({
       if (!rootRef.current?.contains(event.target)) setOpen(false);
     };
     document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
 
   return (
@@ -29,10 +36,16 @@ export default function GlassSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setOpen((isOpen) => !isOpen);
+          }
+        }}
         onClick={() => setOpen((isOpen) => !isOpen)}
       >
         {Icon && <Icon size={16} className="glass-select-icon" />}
-        <span>{selected?.label || "Select an option"}</span>
+        <span className="glass-select-label">{selected?.label || "Select an option"}</span>
         <ChevronDown size={17} className="glass-select-chevron" />
       </button>
       {open && (
@@ -49,7 +62,7 @@ export default function GlassSelect({
                 setOpen(false);
               }}
             >
-              {option.label}
+              <span>{option.label}</span>
             </button>
           ))}
         </div>

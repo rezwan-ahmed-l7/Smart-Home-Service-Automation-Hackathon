@@ -11,7 +11,7 @@ import { useApp } from "./context/AppContext";
 
 function Navbar() {
   const location = useLocation();
-  const { currentUser, logout } = useApp();
+  const { currentUser, logout, toast } = useApp();
   const isCustomer = currentUser?.role === "customer";
   const isProvider = currentUser?.role === "provider";
   return (
@@ -48,6 +48,7 @@ function Navbar() {
           )}
         </div>
       </div>
+      {toast && <div className={`toast toast-${toast.type}`} role="status">{toast.message}</div>}
     </nav>
   );
 }
