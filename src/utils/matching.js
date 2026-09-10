@@ -1,43 +1,63 @@
+const ACTIVE_STATUSES = ["Accepted", "On the Way", "In Progress"];
+
 export function getUrgencyBonus(urgency) {
-  return { Emergency: 15, Urgent: 8, Normal: 0 }[urgency] || 0;
+  return { Emergency: 5, Urgent: 3, Normal: 0 }[urgency] || 0;
+}
+
+function getExpertiseScore(provider, request) {
+  const details = `${request.problemDetails || ""} ${request.serviceName || ""}`.toLowerCase();
+  return provider.expertise.some((item) => details.includes(item.toLowerCase())) ? 1 : 0.7;
+}
+
+function getAvailabilityScore(provider, request) {
+  return provider.availableSlots.includes(request.preferredTime) ? 1 : 0;
 }
 
 export function calculateMatchScore(provider, request) {
-  let score = 0;
+  if (!provider.services.includes(request.serviceId)) return 0;
 
-  // 1. Service Match (must have)
-  if (!provider.services.includes(request.serviceId)) {
-    return 0;
-  }
-  score += 30;
+  const expertise = getExpertiseScore(provider, request);
+  const availability = getAvailabilityScore(provider, request);
+  const distance = Math.max(0, 1 - provider.distance / 10);
+  const rating = Math.max(0, Math.min(1, provider.rating / 5));
+  const price = Math.max(0, Math.min(1, 1 - provider.basePrice / 6000));
+  const urgency = getUrgencyBonus(request.urgency);
 
-  // 2. Rating (0-20 points)
-  score += (provider.rating / 5) * 20;
+  return Math.round((
+    expertise * 30 +
+    availability * 25 +
+    distance * 15 +
+    rating * 15 +
+    price * 10 +
+    urgency
+  ) * 10) / 10;
+}
 
-  // 3. Distance (closer = higher, max 20 points)
-  const distanceScore = Math.max(0, 20 - provider.distance * 2);
-  score += distanceScore;
-
-  // 4. Price (lower basePrice = higher, max 15 points)
-  const priceScore = Math.max(0, 15 - provider.basePrice / 300);
-  score += priceScore;
-
-  // 5. Availability (if has preferred time slot)
-  if (request.preferredTime && provider.availableSlots.includes(request.preferredTime)) {
-    score += 15;
-  } else {
-    score += 5; // still some points if other slots available
-  }
-
-  score += getUrgencyBonus(request.urgency);
-  return Math.round(score * 10) / 10;
+export function getMatchReasons(provider, request) {
+  const reasons = [
+    provider.services.includes(request.serviceId)
+      ? `Supports ${request.serviceName}`
+      : "Service compatible",
+    getExpertiseScore(provider, request) === 1
+      ? `Expert in ${provider.expertise.join(", ")}`
+      : "Experienced local provider",
+    getAvailabilityScore(provider, request)
+      ? `Available at ${request.preferredTime}`
+      : "Time slot needs confirmation",
+    `${provider.distance} km away`,
+    `${provider.rating}★ rating`,
+    "Competitive price",
+  ];
+  return reasons;
 }
 
 export function getMatchedProviders(request, allProviders, existingRequests = []) {
   return allProviders
+    .filter((provider) => provider.services.includes(request.serviceId))
+    .filter((provider) => provider.availableSlots.includes(request.preferredTime))
     .filter((provider) => !existingRequests.some((existing) =>
       existing.assignedProviderId === provider.id &&
-      ["Accepted", "On the Way", "In Progress"].includes(existing.status) &&
+      ACTIVE_STATUSES.includes(existing.status) &&
       existing.preferredDate === request.preferredDate &&
       existing.preferredTime === request.preferredTime
     ))
@@ -45,7 +65,7 @@ export function getMatchedProviders(request, allProviders, existingRequests = []
       ...provider,
       matchScore: calculateMatchScore(provider, request),
       urgencyBonus: getUrgencyBonus(request.urgency),
+      matchReasons: getMatchReasons(provider, request),
     }))
-    .filter((p) => p.matchScore > 0)
     .sort((a, b) => b.matchScore - a.matchScore);
 }

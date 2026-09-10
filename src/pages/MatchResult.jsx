@@ -7,9 +7,7 @@ export default function MatchResult() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { requests, acceptRequest, currentUser } = useApp();
-  const request = requests.find((r) => r.id === id && (
-    r.ownerEmail === currentUser?.email || r.ownerUsername === currentUser?.username
-  ));
+  const request = requests.find((r) => r.id === id && r.ownerEmail === currentUser?.email);
 
   if (!request) {
     return (
@@ -76,7 +74,7 @@ export default function MatchResult() {
                   <MapPin size={14} /> {provider.distance} km away
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock size={14} /> Available: {provider.availableSlots[0]}
+                  <Clock size={14} /> Available: {request.preferredTime}
                 </span>
                 <span className="flex items-center gap-1">
                   <Phone size={14} /> {provider.phone}
@@ -84,8 +82,14 @@ export default function MatchResult() {
               </div>
               <p className="text-sm text-gray-500 mt-1">
                 Match Score: <span className="font-medium text-green-600">{provider.matchScore}</span>
-                <span className="ml-2 text-indigo-600">(+{provider.urgencyBonus || 0} urgency)</span>
               </p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {(provider.matchReasons || []).slice(0, 4).map((reason) => (
+                  <span key={reason} className="text-xs rounded-full bg-indigo-50 px-2.5 py-1 text-indigo-700">
+                    ✓ {reason}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="text-right">

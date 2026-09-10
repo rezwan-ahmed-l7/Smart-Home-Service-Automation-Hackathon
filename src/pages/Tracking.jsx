@@ -8,9 +8,7 @@ const statusSteps = ["Requested", "Accepted", "On the Way", "In Progress", "Comp
 export default function Tracking() {
   const { id } = useParams();
   const { requests, providers, currentUser, rateRequest, showToast } = useApp();
-  const request = requests.find((r) => r.id === id && (
-    r.ownerEmail === currentUser?.email || r.ownerUsername === currentUser?.username
-  ));
+  const request = requests.find((r) => r.id === id && r.ownerEmail === currentUser?.email);
   const [selectedRating, setSelectedRating] = useState(request?.rating || 0);
   const [review, setReview] = useState(request?.review || "");
   const [ratingError, setRatingError] = useState("");
@@ -41,13 +39,16 @@ export default function Tracking() {
       {/* Status Timeline */}
       <div className="surface p-6 sm:p-7 mb-6">
         <h2 className="font-semibold text-gray-900 mb-5">Status</h2>
-        {isRejected && (
-          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 mb-4">
-            This request was declined. Please create a new request to find another provider.
-          </p>
-        )}
-        <div className="space-y-4">
-          {statusSteps.map((step, index) => {
+      {isRejected ? (
+        <div className="rounded-2xl bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Provider declined this request.</p>
+          <p className="text-sm mt-1">Find another provider for the same service and time slot.</p>
+          <Link to="/" className="primary-button mt-4 px-4 py-2 rounded-xl text-sm font-semibold">
+            Find Another Provider
+          </Link>
+        </div>
+      ) : <div className="space-y-4">
+        {statusSteps.map((step, index) => {
             const isCompleted = index <= currentIndex;
             const isCurrent = index === currentIndex;
 
@@ -77,7 +78,7 @@ export default function Tracking() {
               </div>
             );
           })}
-        </div>
+        </div>}
       </div>
 
       {/* Request Details */}

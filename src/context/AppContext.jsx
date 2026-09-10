@@ -2,6 +2,15 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { providers } from "../data/providers";
 
 const AppContext = createContext();
+const ACTIVE_STATUSES = ["Accepted", "On the Way", "In Progress"];
+const STATUS_TRANSITIONS = {
+  Requested: ["Accepted", "Rejected"],
+  Accepted: ["On the Way"],
+  "On the Way": ["In Progress"],
+  "In Progress": ["Completed"],
+  Completed: [],
+  Rejected: [],
+};
 
 function readStoredValue(key, fallback) {
   try {
@@ -15,6 +24,15 @@ function readStoredValue(key, fallback) {
   } catch {
     localStorage.removeItem(key);
     return fallback;
+  }
+}
+
+function persistValue(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -32,11 +50,11 @@ export function AppProvider({ children }) {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem("service_requests", JSON.stringify(requests));
+    persistValue("service_requests", requests);
   }, [requests]);
 
   useEffect(() => {
-    localStorage.setItem("smartservice_booked_slots", JSON.stringify(bookedSlots));
+    persistValue("smartservice_booked_slots", bookedSlots);
   }, [bookedSlots]);
 
   const showToast = (message, type = "success") => {
@@ -46,7 +64,7 @@ export function AppProvider({ children }) {
 
   const login = (user) => {
     setCurrentUser(user);
-    localStorage.setItem("smartservice_user", JSON.stringify(user));
+    persistValue("smartservice_user", user);
   };
 
   const logout = () => {
@@ -55,6 +73,10 @@ export function AppProvider({ children }) {
   };
 
   const addRequest = (request) => {
+    if (currentUser?.role !== "customer") {
+      showToast("Only customers can create service requests.", "error");
+      return null;
+    }
     const newRequest = {
       ...request,
       id: Date.now().toString(),
@@ -68,26 +90,55 @@ export function AppProvider({ children }) {
   };
 
   const updateRequestStatus = (id, status) => {
-    setRequests((prev) =>
-      prev.map((req) => (req.id === id ? { ...req, status } : req))
-    );
+    const request = requests.find((item) => item.id === id);
+    if (!request || !STATUS_TRANSITIONS[request.status]?.includes(status)) {
+      showToast("That status update is not allowed.", "error");
+      return false;
+    }
+    const isAssignedProvider = currentUser?.role === "provider" &&
+      request.assignedProviderId === currentUser.providerId;
+    const isEligibleProvider = currentUser?.role === "provider" &&
+      request.status === "Requested" &&
+      request.matchedProviders?.some((provider) => provider.id === currentUser.providerId);
+    if (!isAssignedProvider && !isEligibleProvider) {
+      showToast("You are not authorized to update this request.", "error");
+      return false;
+    }
+    setRequests((prev) => prev.map((req) => (
+      req.id === id ? {
+        ...req,
+        status,
+        ...(status === "Rejected" ? { assignedProviderId: null } : {}),
+      } : req
+    )));
     if (status === "Rejected") {
       setBookedSlots((prev) => prev.filter((slot) => slot.requestId !== id));
     }
     showToast(`Request marked ${status.toLowerCase()}.`);
+    return true;
   };
 
   const acceptRequest = (id, providerId) => {
     const request = requests.find((item) => item.id === id);
+    const provider = providers.find((item) => item.id === providerId);
+    const isOwner = currentUser?.role === "customer" &&
+      request?.ownerEmail === currentUser.email;
+    const isAuthorized = request?.status === "Requested" &&
+      request.matchedProviders?.some((item) => item.id === providerId) &&
+      (isOwner || (currentUser?.role === "provider" && currentUser.providerId === providerId));
     const slotIsBooked = requests.some((item) =>
       item.id !== id &&
       item.assignedProviderId === providerId &&
-      ["Accepted", "On the Way", "In Progress"].includes(item.status) &&
+      ACTIVE_STATUSES.includes(item.status) &&
       item.preferredDate === request?.preferredDate &&
       item.preferredTime === request?.preferredTime
     );
-    if (!request || slotIsBooked) {
-      showToast("That provider is already booked for this time.", "error");
+    if (!request || !provider || !isAuthorized || !provider.services.includes(request.serviceId)) {
+      showToast("You are not authorized to assign this provider.", "error");
+      return false;
+    }
+    if (!provider.availableSlots.includes(request.preferredTime) || slotIsBooked) {
+      showToast("That provider is no longer available for this time.", "error");
       return false;
     }
     setRequests((prev) => prev.map((req) =>
@@ -102,15 +153,18 @@ export function AppProvider({ children }) {
   };
 
   const rateRequest = (id, rating, review) => {
-    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    const request = requests.find((item) => item.id === id);
+    const cleanReview = typeof review === "string" ? review.trim() : "";
+    const ownsRequest = request?.ownerEmail === currentUser?.email;
+    if (!ownsRequest || request.status !== "Completed" || request.rating ||
+      !Number.isInteger(rating) || rating < 1 || rating > 5 || cleanReview.length > 500) {
+      showToast("This request cannot be rated.", "error");
       return false;
     }
     setRequests((prev) =>
       prev.map((req) =>
-        req.id === id &&
-          (req.ownerEmail === currentUser?.email || req.ownerUsername === currentUser?.username) &&
-          req.status === "Completed" && !req.rating
-          ? { ...req, rating, review: review.trim(), ratedAt: new Date().toISOString() }
+        req.id === id
+          ? { ...req, rating, review: cleanReview, ratedAt: new Date().toISOString() }
           : req
       )
     );

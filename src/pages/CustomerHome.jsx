@@ -27,6 +27,7 @@ export default function CustomerHome() {
   const [selectedService, setSelectedService] = useState(null);
   const [search, setSearch] = useState("");
   const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     location: "",
@@ -51,42 +52,72 @@ export default function CustomerHome() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     if (!form.location.trim() || !form.preferredDate || !form.preferredTime || !form.contactName.trim() || !form.contactPhone.trim()) {
       setFormError("Please complete all required fields.");
+      setIsSubmitting(false);
       return;
     }
     const phone = form.contactPhone.trim();
     if (!/^\d{11}$/.test(phone)) {
       setFormError("Phone number must contain exactly 11 digits.");
+      setIsSubmitting(false);
       return;
     }
     if (!/^[a-zA-Z][a-zA-Z .'-]{1,59}$/.test(form.contactName.trim())) {
       setFormError("Name must contain letters and spaces only.");
+      setIsSubmitting(false);
       return;
     }
     if (new Date(`${form.preferredDate}T23:59:59`) < new Date()) {
       setFormError("Preferred date must be today or a future date.");
+      setIsSubmitting(false);
       return;
     }
     setFormError("");
 
     let image = null;
     if (form.image) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(form.image.type)) {
+        setFormError("Please choose a JPG, PNG, or WebP image.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (form.image.size > 5 * 1024 * 1024) {
+        setFormError("Images must be 5 MB or smaller.");
+        setIsSubmitting(false);
+        return;
+      }
       try {
         image = await new Promise((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => resolve({
-            name: form.image.name,
-            type: form.image.type,
-            size: form.image.size,
-            dataUrl: reader.result,
-          });
+          reader.onload = () => {
+            const preview = new Image();
+            preview.onload = () => {
+              const scale = Math.min(1, 1280 / Math.max(preview.width, preview.height));
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.max(1, Math.round(preview.width * scale));
+              canvas.height = Math.max(1, Math.round(preview.height * scale));
+              canvas.getContext("2d").drawImage(preview, 0, 0, canvas.width, canvas.height);
+              resolve({
+                name: form.image.name,
+                type: "image/jpeg",
+                size: form.image.size,
+                dataUrl: canvas.toDataURL("image/jpeg", 0.8),
+              });
+            };
+            preview.onerror = () => reject(new Error("Unreadable image."));
+            preview.src = reader.result;
+          };
           reader.onerror = () => reject(new Error("Unable to read the selected image."));
           reader.readAsDataURL(form.image);
         });
       } catch {
         setFormError("The selected image could not be read. Please choose another image.");
+        setIsSubmitting(false);
         return;
       }
     }
@@ -114,7 +145,8 @@ export default function CustomerHome() {
     });
 
     // Go to matching result page
-    navigate(`/match/${newRequest.id}`);
+    if (newRequest) navigate(`/match/${newRequest.id}`);
+    setIsSubmitting(false);
   };
 
   // ========== STEP 1: Service Selection ==========
@@ -337,9 +369,10 @@ export default function CustomerHome() {
         {/* Submit */}
         <button
           type="submit"
+          disabled={isSubmitting}
           className="primary-button w-full font-bold py-3.5 rounded-xl"
         >
-          Find Best Providers
+          {isSubmitting ? "Finding providers…" : "Find Best Providers"}
         </button>
       </form>
     </div>
