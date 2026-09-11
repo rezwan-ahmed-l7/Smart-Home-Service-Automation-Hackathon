@@ -19,7 +19,7 @@ function Navbar() {
       <div className="header-inner flex items-center justify-between">
         <Link to="/" className="brand-mark">
           <span className="brand-icon"><Wrench size={19} /></span>
-          Smart<span className="text-indigo-600">Service</span>
+          Smart Home <span className="text-indigo-600">Service</span>
         </Link>
         <div className="flex items-center gap-1">
           {isCustomer && (
