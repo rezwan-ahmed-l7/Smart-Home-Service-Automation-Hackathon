@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { CheckCircle, Circle, MapPin, Clock, User, Phone, Star } from "lucide-react";
+import PaymentPanel from "../components/PaymentPanel";
 
 const statusSteps = ["Requested", "Accepted", "On the Way", "In Progress", "Completed"];
 
@@ -125,8 +126,12 @@ export default function Tracking() {
         </div>
       )}
 
-      {/* Rating (only when Completed) */}
-      {request.status === "Completed" && (
+      {assignedProvider && (
+        <PaymentPanel request={request} provider={assignedProvider} />
+      )}
+
+      {/* Invoice and rating */}
+      {(request.status === "Completed" || request.paymentStatus === "Paid") && (
         <>
         <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-4">Digital invoice</h2>
@@ -134,10 +139,16 @@ export default function Tracking() {
             <span>Service</span><strong className="text-right text-gray-900">{request.serviceName}</strong>
             <span>Provider</span><strong className="text-right text-gray-900">{assignedProvider?.name || "Assigned provider"}</strong>
             <span>Date</span><strong className="text-right text-gray-900">{request.preferredDate}</strong>
-            <span>Estimated price</span><strong className="text-right text-gray-900">{assignedProvider?.priceRange || "To be confirmed"}</strong>
+            <span>Payment method</span><strong className="text-right text-gray-900">{request.paymentMethod || "Payment pending"}</strong>
+            <span>Amount paid</span><strong className="text-right text-gray-900">{request.paidAmount ? `৳${request.paidAmount.toLocaleString()}` : "Payment pending"}</strong>
+            <span>Paid time</span><strong className="text-right text-gray-900">{request.paidAt ? new Date(request.paidAt).toLocaleString() : "—"}</strong>
             <span>Rating</span><strong className="text-right text-gray-900">{request.rating ? `${request.rating}/5` : "Not rated yet"}</strong>
           </div>
         </div>
+        {request.status !== "Completed" && request.paymentStatus !== "Paid" && (
+          <p className="text-sm text-amber-700 mb-6">Payment pending — use the payment panel above to complete this demo payment.</p>
+        )}
+        {request.status === "Completed" && (
         <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-3">
             {request.rating ? "Your service rating" : "Rate this service"}
@@ -187,6 +198,7 @@ export default function Tracking() {
             <p className="text-sm text-gray-500 mt-2">{request.review || "Thanks for sharing your feedback."}</p>
           )}
         </div>
+        )}
         </>
       )}
 

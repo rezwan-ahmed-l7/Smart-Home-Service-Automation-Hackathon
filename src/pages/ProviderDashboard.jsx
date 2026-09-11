@@ -166,6 +166,20 @@ export default function ProviderDashboard() {
                 </span>
               </div>
 
+              <div className="flex flex-wrap items-center gap-2 mb-5 text-sm">
+                <span className={`px-2.5 py-1 rounded-lg font-semibold ${
+                  req.paymentStatus === "Paid" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
+                }`}>
+                  {req.paymentStatus === "Paid" ? "Paid" : "Unpaid"}
+                </span>
+                {req.paymentStatus === "Paid" && (
+                  <>
+                    <span className="text-gray-600">{req.paymentMethod}</span>
+                    <span className="font-semibold text-gray-900">৳{req.paidAmount?.toLocaleString()}</span>
+                  </>
+                )}
+              </div>
+
               {/* Actions */}
               <div className="flex flex-wrap gap-3">
                 {req.status === "Requested" && (

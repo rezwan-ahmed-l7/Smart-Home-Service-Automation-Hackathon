@@ -3,6 +3,7 @@ import { providers } from "../data/providers";
 
 const AppContext = createContext();
 const ACTIVE_STATUSES = ["Accepted", "On the Way", "In Progress"];
+const PAYABLE_STATUSES = ["Accepted", "On the Way", "In Progress", "Completed"];
 const STATUS_TRANSITIONS = {
   Requested: ["Accepted", "Rejected"],
   Accepted: ["On the Way"],
@@ -11,6 +12,13 @@ const STATUS_TRANSITIONS = {
   Completed: [],
   Rejected: [],
 };
+const normalizeRequest = (request) => ({
+  ...request,
+  paymentStatus: request.paymentStatus === "Paid" ? "Paid" : "Unpaid",
+  paymentMethod: request.paymentMethod || null,
+  paidAmount: Number.isFinite(request.paidAmount) ? request.paidAmount : null,
+  paidAt: request.paidAt || null,
+});
 
 function readStoredValue(key, fallback) {
   try {
@@ -38,7 +46,7 @@ function persistValue(key, value) {
 
 export function AppProvider({ children }) {
   const [requests, setRequests] = useState(() =>
-    readStoredValue("service_requests", [])
+    readStoredValue("service_requests", []).map(normalizeRequest)
   );
 
   const [currentUser, setCurrentUser] = useState(() =>
@@ -83,10 +91,35 @@ export function AppProvider({ children }) {
       ownerEmail: currentUser?.email,
       ownerUsername: currentUser?.username,
       status: "Requested",
+      paymentStatus: "Unpaid",
+      paymentMethod: null,
+      paidAmount: null,
+      paidAt: null,
       createdAt: new Date().toISOString(),
     };
+
     setRequests((prev) => [newRequest, ...prev]);
     return newRequest;
+  };
+
+  const markRequestPaid = (id, { method, amount }) => {
+    const request = requests.find((item) => item.id === id);
+    const ownsRequest = request?.ownerEmail === currentUser?.email;
+    const validMethod = ["bKash", "Nagad", "Card", "Cash on Service"].includes(method);
+    if (!request || !ownsRequest || !PAYABLE_STATUSES.includes(request.status) ||
+      request.paymentStatus === "Paid" || !validMethod || !Number.isFinite(amount) || amount <= 0) {
+      showToast("This request cannot be paid.", "error");
+      return false;
+    }
+    setRequests((prev) => prev.map((req) => req.id === id ? {
+      ...req,
+      paymentStatus: "Paid",
+      paymentMethod: method,
+      paidAmount: amount,
+      paidAt: new Date().toISOString(),
+    } : req));
+    showToast("Payment confirmed successfully.");
+    return true;
   };
 
   const updateRequestStatus = (id, status) => {
@@ -179,6 +212,7 @@ export function AppProvider({ children }) {
         updateRequestStatus,
         acceptRequest,
         rateRequest,
+        markRequestPaid,
         currentUser,
         login,
         logout,
