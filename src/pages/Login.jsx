@@ -40,7 +40,7 @@ export default function Login() {
       <section className="login-showcase">
         <Link to="/" className="brand-mark login-brand">
           <span className="brand-icon"><Wrench size={19} /></span>
-          Smart<span className="text-indigo-600">Service</span>
+          Smart Home <span className="text-indigo-600">Service</span>
         </Link>
         <div className="login-showcase-copy">
           <p className="eyebrow">One account. Every solution.</p>
