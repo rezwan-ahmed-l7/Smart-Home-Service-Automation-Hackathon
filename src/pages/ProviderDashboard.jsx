@@ -78,7 +78,7 @@ export default function ProviderDashboard() {
         <div className="surface p-4"><p className="text-xs text-gray-500">Completed</p><p className="text-2xl font-bold text-gray-900 mt-1">{stats.completed}</p></div>
         <div className="surface p-4"><p className="text-xs text-gray-500">Customer rating</p><p className="text-2xl font-bold text-gray-900 mt-1">{stats.rating}</p></div>
       </div>
-      <div className="surface p-4 mb-6">
+      <div className="provider-filters surface p-4 mb-6">
         <div className="flex flex-col lg:flex-row gap-3">
           <label className="relative flex-1">
             <Search size={17} className="absolute left-3.5 top-3.5 text-gray-400" />
@@ -193,7 +193,7 @@ export default function ProviderDashboard() {
               </div>
 
               {/* Actions */}
-              <div className="flex flex-wrap gap-3">
+              <div className="provider-actions flex flex-wrap gap-3">
                 {req.status === "Requested" && (
                   <>
                     <button

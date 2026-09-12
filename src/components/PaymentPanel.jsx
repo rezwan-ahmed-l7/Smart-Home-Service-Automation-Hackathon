@@ -87,7 +87,7 @@ export default function PaymentPanel({ request, provider }) {
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+          <div className="payment-method-grid grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
             {METHODS.map(({ value, label, icon: Icon }) => (
               <button
                 key={value}
@@ -121,7 +121,7 @@ export default function PaymentPanel({ request, provider }) {
             <div className="flex justify-between border-t border-white/70 pt-2 text-base"><span className="font-semibold text-gray-900">Total</span><strong className="text-indigo-700">৳{amount.total.toLocaleString()}</strong></div>
           </div>
           {error && <p className="text-sm text-red-600 mb-3" role="alert">{error}</p>}
-          <button type="submit" disabled={isSubmitting} className="primary-button w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold">
+          <button type="submit" disabled={isSubmitting} className="payment-submit primary-button w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold">
             {method === "Cash on Service"
               ? `Confirm Pay on Service · ৳${amount.total.toLocaleString()}`
               : `Pay Now · Confirm ৳${amount.total.toLocaleString()}`}

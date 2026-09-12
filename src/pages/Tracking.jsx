@@ -144,7 +144,7 @@ export default function Tracking() {
         <>
         <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-4">Digital invoice</h2>
-          <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+          <div className="invoice-grid grid grid-cols-2 gap-3 text-sm text-gray-600">
             <span>Service</span><strong className="text-right text-gray-900">{request.serviceName}</strong>
             <span>Provider</span><strong className="text-right text-gray-900">{assignedProvider?.name || "Assigned provider"}</strong>
             <span>Date</span><strong className="text-right text-gray-900">{request.preferredDate}</strong>

@@ -95,7 +95,7 @@ export default function MatchResult() {
               </div>
             </div>
 
-            <div className="text-right">
+            <div className="match-provider-action text-right">
               <p className="font-semibold text-gray-900 mb-2">{provider.priceRange}</p>
               {request.status === "Requested" ? (
                 <button

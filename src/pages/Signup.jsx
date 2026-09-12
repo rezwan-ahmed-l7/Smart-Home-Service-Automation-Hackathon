@@ -64,10 +64,6 @@ export default function Signup() {
   return (
     <main className="login-page signup-page">
       <section className="login-showcase">
-        <Link to="/" className="brand-mark login-brand">
-          <span className="brand-icon"><Wrench size={19} /></span>
-          Smart Home <span className="text-indigo-600">Service</span>
-        </Link>
         <div className="login-showcase-copy">
           <p className="eyebrow">A better way to get things done</p>
           <h1>Make home feel effortless.</h1>
