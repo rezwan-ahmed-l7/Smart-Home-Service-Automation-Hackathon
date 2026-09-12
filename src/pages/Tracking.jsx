@@ -28,6 +28,11 @@ export default function Tracking() {
   const currentIndex = statusSteps.indexOf(request.status);
   const assignedProvider = providers.find((p) => p.id === request.assignedProviderId);
   const isRejected = request.status === "Rejected";
+  const isPaid = request.paymentStatus === "Paid";
+  const isPayOnService = request.paymentStatus === "Pay on Service";
+  const invoiceAmount = assignedProvider
+    ? Math.round((Number(assignedProvider.basePrice) || 0) * ({ Normal: 1, Urgent: 1.15, Emergency: 1.3 }[request.urgency] || 1))
+    : null;
 
   return (
     <div className="page-wrap max-w-3xl">
@@ -131,7 +136,7 @@ export default function Tracking() {
       )}
 
       {/* Invoice and rating */}
-      {(request.status === "Completed" || request.paymentStatus === "Paid") && (
+      {(request.status === "Completed" || isPaid || isPayOnService) && (
         <>
         <div className="surface p-6 sm:p-7 mb-6">
           <h2 className="font-semibold text-gray-900 mb-4">Digital invoice</h2>
@@ -140,12 +145,21 @@ export default function Tracking() {
             <span>Provider</span><strong className="text-right text-gray-900">{assignedProvider?.name || "Assigned provider"}</strong>
             <span>Date</span><strong className="text-right text-gray-900">{request.preferredDate}</strong>
             <span>Payment method</span><strong className="text-right text-gray-900">{request.paymentMethod || "Payment pending"}</strong>
-            <span>Amount paid</span><strong className="text-right text-gray-900">{request.paidAmount ? `৳${request.paidAmount.toLocaleString()}` : "Payment pending"}</strong>
-            <span>Paid time</span><strong className="text-right text-gray-900">{request.paidAt ? new Date(request.paidAt).toLocaleString() : "—"}</strong>
+            {isPayOnService ? (
+              <>
+                <span>Payment status</span><strong className="text-right text-amber-700">Pay on Service / Unpaid</strong>
+                <span>Amount due</span><strong className="text-right text-gray-900">{invoiceAmount !== null ? `৳${invoiceAmount.toLocaleString()}` : "—"}</strong>
+              </>
+            ) : (
+              <>
+                <span>Amount paid</span><strong className="text-right text-gray-900">{request.paidAmount ? `৳${request.paidAmount.toLocaleString()}` : "Payment pending"}</strong>
+              </>
+            )}
+            <span>Paid time</span><strong className="text-right text-gray-900">{isPayOnService ? "Not paid yet" : request.paidAt ? new Date(request.paidAt).toLocaleString() : "—"}</strong>
             <span>Rating</span><strong className="text-right text-gray-900">{request.rating ? `${request.rating}/5` : "Not rated yet"}</strong>
           </div>
         </div>
-        {request.status !== "Completed" && request.paymentStatus !== "Paid" && (
+        {request.status !== "Completed" && !isPaid && !isPayOnService && (
           <p className="text-sm text-amber-700 mb-6">Payment pending — use the payment panel above to complete this demo payment.</p>
         )}
         {request.status === "Completed" && (

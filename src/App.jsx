@@ -7,6 +7,7 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 import Tracking from "./pages/Tracking";
 import MyRequests from "./pages/MyRequests";
 import Login from "./pages/Login";
+import Landing from "./pages/Landing";
 import { useApp } from "./context/AppContext";
 
 function Navbar() {
@@ -14,6 +15,22 @@ function Navbar() {
   const { currentUser, logout, toast } = useApp();
   const isCustomer = currentUser?.role === "customer";
   const isProvider = currentUser?.role === "provider";
+  const isPublicLanding = location.pathname === "/" && !currentUser;
+  if (isPublicLanding) {
+    return (
+      <nav className="site-header">
+        <div className="header-inner flex items-center justify-between">
+          <Link to="/" className="brand-mark">
+            <span className="brand-icon"><Wrench size={19} /></span>
+            Smart Home <span className="text-indigo-600">Service</span>
+          </Link>
+          <Link to="/login" className="primary-button px-4 py-2 rounded-xl text-sm font-semibold">
+            <LogIn size={16} /> Sign in
+          </Link>
+        </div>
+      </nav>
+    );
+  }
   return (
     <nav className="site-header">
       <div className="header-inner flex items-center justify-between">
@@ -53,6 +70,11 @@ function Navbar() {
   );
 }
 
+function HomeRoute() {
+  const { currentUser } = useApp();
+  return currentUser ? <ProtectedRoute role="customer"><CustomerHome /></ProtectedRoute> : <Landing />;
+}
+
 function ProtectedRoute({ role, children }) {
   const { currentUser } = useApp();
   if (!currentUser) return <Navigate to="/login" replace />;
@@ -70,7 +92,7 @@ export default function App() {
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<ProtectedRoute role="customer"><CustomerHome /></ProtectedRoute>} />
+            <Route path="/" element={<HomeRoute />} />
             <Route path="/match/:id" element={<ProtectedRoute role="customer"><MatchResult /></ProtectedRoute>} />
             <Route path="/tracking/:id" element={<ProtectedRoute role="customer"><Tracking /></ProtectedRoute>} />
             <Route path="/my-requests" element={<ProtectedRoute role="customer"><MyRequests /></ProtectedRoute>} />

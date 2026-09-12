@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, AtSign, LockKeyhole, Phone, ShieldCheck, UserRound, Wrench } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ArrowRight, AtSign, LockKeyhole, Phone, UserRound, Wrench } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import GlassSelect from "../components/GlassSelect";
 
@@ -8,8 +8,9 @@ const initialForm = { username: "", phone: "", email: "", password: "" };
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, providers } = useApp();
-  const [role, setRole] = useState("customer");
+  const [role, setRole] = useState(searchParams.get("role") === "provider" ? "provider" : "customer");
   const [form, setForm] = useState({ ...initialForm, providerId: providers[0]?.id || "" });
   const [loginError, setLoginError] = useState("");
 
@@ -43,10 +44,10 @@ export default function Login() {
           Smart Home <span className="text-indigo-600">Service</span>
         </Link>
         <div className="login-showcase-copy">
-          <p className="eyebrow">One account. Every solution.</p>
-          <h1>Home care that moves at your pace.</h1>
-          <p>Sign in to keep your requests, trusted providers, and service updates all in one place.</p>
-          <div className="login-trust"><ShieldCheck size={18} /> Your details stay private and secure.</div>
+          <p className="eyebrow">Smart Home Service</p>
+          <h1>Welcome to smarter home service.</h1>
+          <p>Connect with the right professional, at the right time.</p>
+          <div className="login-benefits"><span>✓ Smart provider matching</span><span>✓ Flexible scheduling</span><span>✓ Service tracking</span></div>
         </div>
       </section>
 
@@ -54,8 +55,8 @@ export default function Login() {
         <div className="login-card surface">
           <div className="mb-7">
             <p className="eyebrow">Welcome back</p>
-            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-2">Sign in to continue</h2>
-            <p className="text-gray-500 mt-2 text-sm">Choose your workspace and enter your details below.</p>
+            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-2">Sign in to your account</h2>
+            <p className="text-gray-500 mt-2 text-sm">Choose your role to continue.</p>
           </div>
 
           <div className="role-switch" aria-label="Account type">
@@ -66,12 +67,7 @@ export default function Login() {
               <Wrench size={16} /> Provider
             </button>
           </div>
-          <div className="demo-credentials" role="note">
-            <strong>Demo credentials</strong>
-            <span>Customer: any name + 11-digit phone + @gmail.com</span>
-            <span>Provider: choose a profile + the same details</span>
-            <span>Password: <b>123456</b></span>
-          </div>
+          <div className="demo-credentials" role="note">Demo Mode · Password: <b>123456</b></div>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-6">
             <label className="login-field">
@@ -104,11 +100,11 @@ export default function Login() {
               <div><LockKeyhole size={17} /><input className="field" type="password" name="password" value={form.password} onChange={handleChange} placeholder="Enter your password" minLength={6} required /></div>
             </label>
             <button className="primary-button w-full rounded-xl py-3.5 font-bold mt-2" type="submit">
-              Sign in as {role} <ArrowRight size={17} />
+              Sign In <ArrowRight size={17} />
             </button>
             {loginError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{loginError}</p>}
           </form>
-          <p className="text-center text-xs text-gray-400 mt-6">By continuing, you agree to our Terms and Privacy Policy.</p>
+          <p className="text-center text-xs text-gray-400 mt-5"><Link to="/" className="text-indigo-600 hover:underline">← Back to Home</Link></p>
         </div>
       </section>
     </main>

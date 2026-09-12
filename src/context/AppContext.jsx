@@ -14,7 +14,9 @@ const STATUS_TRANSITIONS = {
 };
 const normalizeRequest = (request) => ({
   ...request,
-  paymentStatus: request.paymentStatus === "Paid" ? "Paid" : "Unpaid",
+  paymentStatus: ["Paid", "Pay on Service"].includes(request.paymentStatus)
+    ? request.paymentStatus
+    : "Unpaid",
   paymentMethod: request.paymentMethod || null,
   paidAmount: Number.isFinite(request.paidAmount) ? request.paidAmount : null,
   paidAt: request.paidAt || null,
@@ -107,18 +109,20 @@ export function AppProvider({ children }) {
     const ownsRequest = request?.ownerEmail === currentUser?.email;
     const validMethod = ["bKash", "Nagad", "Card", "Cash on Service"].includes(method);
     if (!request || !ownsRequest || !PAYABLE_STATUSES.includes(request.status) ||
-      request.paymentStatus === "Paid" || !validMethod || !Number.isFinite(amount) || amount <= 0) {
+      ["Paid", "Pay on Service"].includes(request.paymentStatus) ||
+      !validMethod || !Number.isFinite(amount) || amount <= 0) {
       showToast("This request cannot be paid.", "error");
       return false;
     }
+    const isCashOnService = method === "Cash on Service";
     setRequests((prev) => prev.map((req) => req.id === id ? {
       ...req,
-      paymentStatus: "Paid",
+      paymentStatus: isCashOnService ? "Pay on Service" : "Paid",
       paymentMethod: method,
-      paidAmount: amount,
-      paidAt: new Date().toISOString(),
+      paidAmount: isCashOnService ? null : amount,
+      paidAt: isCashOnService ? null : new Date().toISOString(),
     } : req));
-    showToast("Payment confirmed successfully.");
+    showToast(isCashOnService ? "Pay on Service confirmed." : "Payment confirmed successfully.");
     return true;
   };
 

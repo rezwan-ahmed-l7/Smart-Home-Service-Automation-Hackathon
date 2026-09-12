@@ -170,13 +170,20 @@ export default function ProviderDashboard() {
                 <span className={`px-2.5 py-1 rounded-lg font-semibold ${
                   req.paymentStatus === "Paid" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
                 }`}>
-                  {req.paymentStatus === "Paid" ? "Paid" : "Unpaid"}
+                  {req.paymentStatus === "Paid"
+                    ? "Paid"
+                    : req.paymentStatus === "Pay on Service"
+                    ? "Pay on Service"
+                    : "Unpaid"}
                 </span>
                 {req.paymentStatus === "Paid" && (
                   <>
                     <span className="text-gray-600">{req.paymentMethod}</span>
                     <span className="font-semibold text-gray-900">৳{req.paidAmount?.toLocaleString()}</span>
                   </>
+                )}
+                {req.paymentStatus === "Pay on Service" && (
+                  <span className="text-gray-600">{req.paymentMethod}</span>
                 )}
               </div>
 

@@ -248,6 +248,7 @@ button { cursor: pointer; }
 .login-showcase-copy h1 { margin: 14px 0; color: #172033; font-size: clamp(2.8rem, 5vw, 5.2rem); font-weight: 850; letter-spacing: -.075em; line-height: .98; }
 .login-showcase-copy > p:not(.eyebrow) { max-width: 430px; color: #687084; font-size: 1.08rem; line-height: 1.7; }
 .login-trust { display: flex; align-items: center; gap: 9px; margin-top: 34px; color: #4f46e5; font-size: .85rem; font-weight: 700; }
+.login-benefits { display: grid; gap: 11px; margin-top: 32px; color: #4f46e5; font-size: .88rem; font-weight: 700; }
 .login-panel { display: grid; place-items: center; padding: 42px 32px; background: rgba(255, 255, 255, .16); }
 .login-card { width: min(100%, 460px); padding: clamp(24px, 5vw, 42px); }
 .role-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, .3); border: 1px solid rgba(255, 255, 255, .5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
@@ -265,6 +266,26 @@ button { cursor: pointer; }
 .login-field .glass-select-icon { position: static; z-index: auto; flex: 0 0 auto; }
 .login-field .field { padding: 12px 14px 12px 40px; }
 .login-field .select-field .field { padding-right: 38px; }
+.landing-page { overflow: hidden; }
+.landing-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); align-items: center; gap: clamp(32px, 7vw, 100px); padding-top: 92px; padding-bottom: 100px; }
+.landing-title { margin: 16px 0; color: #172033; font-size: clamp(3rem, 7vw, 6.2rem); line-height: .96; letter-spacing: -.08em; font-weight: 900; }
+.landing-title span { color: #6366f1; }
+.landing-lede { max-width: 570px; color: #687084; font-size: 1.08rem; line-height: 1.7; }
+.landing-secondary-button { color: #4f46e5; border: 1px solid rgba(99,102,241,.24); background: rgba(255,255,255,.4); }
+.landing-signin { margin-top: 18px; color: #8a91a2; font-size: .84rem; }.landing-signin a { color: #4f46e5; font-weight: 750; }
+.landing-hero-art { position: relative; min-height: 360px; padding: 28px; overflow: hidden; }.landing-art-glow { position: absolute; width: 240px; height: 240px; right: -50px; top: -50px; border-radius: 50%; background: rgba(129,140,248,.24); filter: blur(4px); }
+.landing-live-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 99px; color: #047857; background: #ecfdf5; font-size: .68rem; font-weight: 750; }.landing-live-pill span { width: 6px; height: 6px; border-radius: 50%; background: #10b981; }
+.landing-art-card { position: relative; margin-top: 58px; padding: 20px; border-radius: 18px; background: rgba(255,255,255,.68); box-shadow: 0 18px 35px rgba(32,39,70,.1); }.landing-progress { height: 8px; margin: 25px 0 11px; border-radius: 99px; background: #e6e7f8; overflow: hidden; }.landing-progress span { display: block; width: 72%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#6366f1,#8b5cf6); }
+.landing-art-match { position: relative; display: flex; align-items: center; gap: 11px; max-width: 280px; margin: 14px 0 0 auto; padding: 12px; border-radius: 15px; background: rgba(255,255,255,.62); }.landing-avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; color: #fff; background: #6366f1; }
+.landing-section { padding-top: 78px; padding-bottom: 78px; }.landing-section-title { margin-top: 9px; color: #172033; font-size: clamp(1.8rem, 4vw, 3.1rem); line-height: 1.05; letter-spacing: -.06em; font-weight: 850; }.landing-section-note { max-width: 390px; color: #7b8292; line-height: 1.6; }
+.landing-steps { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }.landing-step { position: relative; min-height: 132px; padding: 20px; border-radius: 17px; background: rgba(255,255,255,.27); border: 1px solid rgba(255,255,255,.55); }.landing-step span { color: #818cf8; font-size: .72rem; font-weight: 800; }.landing-step p { max-width: 120px; margin-top: 24px; color: #30384d; font-weight: 750; line-height: 1.25; }.landing-step-arrow { position: absolute; right: -17px; top: 57px; z-index: 1; color: #a5a3f8; }
+.landing-category { min-height: 150px; padding: 20px; }.landing-category h3 { margin-top: 18px; color: #252b3c; font-size: .94rem; font-weight: 800; }.landing-category p { margin-top: 6px; color: #818899; font-size: .75rem; line-height: 1.45; }
+.landing-feature { display: grid; grid-template-columns: minmax(0,1fr) minmax(300px,.72fr); gap: 70px; align-items: center; padding-top: 95px; padding-bottom: 95px; }.landing-feature-copy > p:not(.eyebrow) { max-width: 520px; margin-top: 18px; color: #737b8e; line-height: 1.7; }.landing-signals { padding: 12px; }.landing-signal { display: flex; align-items: center; gap: 12px; padding: 16px 14px; color: #3f4657; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,.7); }.landing-signal:last-child { border-bottom: 0; }
+.landing-trust { padding-top: 85px; padding-bottom: 85px; }.landing-timeline { display: grid; grid-template-columns: repeat(5,1fr); gap: 0; margin-top: 48px; }.landing-timeline-step { position: relative; display: grid; justify-items: center; gap: 10px; color: #858c9c; font-size: .78rem; font-weight: 700; text-align: center; }.landing-timeline-step:not(:last-child)::after { content: ""; position: absolute; top: 16px; left: calc(50% + 20px); width: calc(100% - 40px); height: 1px; background: #d5d6f2; }.landing-timeline-step > div { position: relative; z-index: 1; display: grid; place-items: center; width: 33px; height: 33px; border-radius: 50%; color: #9ca3af; background: #f2f2ff; }.landing-timeline-step > div.is-active { color: #fff; background: #6366f1; }.landing-final { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 40px; padding-bottom: 40px; margin-bottom: 80px; }
+@media (max-width: 800px) {
+  .landing-hero, .landing-feature { grid-template-columns: 1fr; padding-top: 60px; padding-bottom: 60px; }.landing-hero-art { min-height: 320px; }.landing-steps { grid-template-columns: 1fr; }.landing-step { min-height: 0; }.landing-step p { margin-top: 12px; }.landing-step-arrow { right: auto; left: 22px; top: auto; bottom: -17px; transform: rotate(90deg); }.landing-timeline { gap: 8px; }.landing-timeline-step { font-size: .68rem; }.landing-timeline-step:not(:last-child)::after { left: calc(50% + 17px); width: calc(100% - 34px); }
+}
+@media (max-width: 520px) { .landing-final { display: block; }.landing-final .primary-button { margin-top: 22px; }.landing-category { min-height: 170px; } }
 @media (max-width: 800px) {
   .login-page { display: block; }
   .login-showcase { min-height: 330px; padding: 26px 20px; }

@@ -24,19 +24,21 @@ export default function PaymentPanel({ request, provider }) {
   const [method, setMethod] = useState("");
   const [detail, setDetail] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const amount = useMemo(
     () => calculatePaymentAmount(provider?.basePrice, request.urgency),
     [provider?.basePrice, request.urgency]
   );
   const isPaid = request.paymentStatus === "Paid";
+  const isPayOnService = request.paymentStatus === "Pay on Service";
   const canPay = ["Accepted", "On the Way", "In Progress", "Completed"].includes(request.status);
 
   if (!canPay || !provider) return null;
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (isPaid) {
-      setError("This request has already been paid.");
+    if (isPaid || isPayOnService) {
+      setError(isPaid ? "This request has already been paid." : "Pay on Service is already confirmed for this request.");
       return;
     }
     if (!method) {
@@ -54,7 +56,10 @@ export default function PaymentPanel({ request, provider }) {
       return;
     }
     setError("");
-    markRequestPaid(request.id, { method, amount: amount.total });
+    setIsSubmitting(true);
+    if (!markRequestPaid(request.id, { method, amount: amount.total })) {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -74,6 +79,11 @@ export default function PaymentPanel({ request, provider }) {
       {isPaid ? (
         <div className="rounded-xl bg-green-50 border border-green-100 p-4 text-sm text-green-800">
           Paid via <strong>{request.paymentMethod}</strong> • ৳{request.paidAmount.toLocaleString()}
+        </div>
+      ) : isPayOnService ? (
+        <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-800">
+          <strong>Pay on Service</strong>
+          <p className="mt-1">You&apos;ll pay ৳{amount.total.toLocaleString()} to the provider after the service is completed.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -100,14 +110,21 @@ export default function PaymentPanel({ request, provider }) {
           {method === "Card" && (
             <input className="field px-4 py-3 mb-4" value={detail} onChange={(event) => setDetail(event.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="Last 4 digits" inputMode="numeric" aria-label="Last 4 digits" />
           )}
+          {method === "Cash on Service" && (
+            <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 text-sm text-amber-800 mb-4">
+              You&apos;ll pay ৳{amount.total.toLocaleString()} to the provider after the service is completed.
+            </div>
+          )}
           <div className="rounded-xl bg-white/35 p-4 text-sm text-gray-600 space-y-2 mb-4">
             <div className="flex justify-between"><span>Base service</span><strong className="text-gray-900">৳{amount.base.toLocaleString()}</strong></div>
             <div className="flex justify-between"><span>{request.urgency} surcharge</span><strong className="text-gray-900">৳{amount.surcharge.toLocaleString()}</strong></div>
             <div className="flex justify-between border-t border-white/70 pt-2 text-base"><span className="font-semibold text-gray-900">Total</span><strong className="text-indigo-700">৳{amount.total.toLocaleString()}</strong></div>
           </div>
           {error && <p className="text-sm text-red-600 mb-3" role="alert">{error}</p>}
-          <button type="submit" className="primary-button w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold">
-            Pay Now · Confirm ৳{amount.total.toLocaleString()}
+          <button type="submit" disabled={isSubmitting} className="primary-button w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold">
+            {method === "Cash on Service"
+              ? `Confirm Pay on Service · ৳${amount.total.toLocaleString()}`
+              : `Pay Now · Confirm ৳${amount.total.toLocaleString()}`}
           </button>
         </form>
       )}
