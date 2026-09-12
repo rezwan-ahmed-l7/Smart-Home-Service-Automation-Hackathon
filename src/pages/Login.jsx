@@ -9,10 +9,11 @@ const initialForm = { username: "", phone: "", email: "", password: "" };
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, providers } = useApp();
+  const { authenticate, providers } = useApp();
   const [role, setRole] = useState(searchParams.get("role") === "provider" ? "provider" : "customer");
-  const [form, setForm] = useState({ ...initialForm, providerId: providers[0]?.id || "" });
+  const [form, setForm] = useState({ ...initialForm, providerId: "" });
   const [loginError, setLoginError] = useState("");
+  const registrationComplete = searchParams.get("registered") === "1";
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -21,19 +22,30 @@ export default function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (form.password !== "123456") {
-      setLoginError("Demo mode uses password 123456.");
+    if (role === "provider" && !form.providerId) {
+      setLoginError("Choose your provider profile to continue.");
       return;
     }
-    setLoginError("");
-    login({
-      username: form.username.trim(),
+    const result = authenticate({
+      username: form.username,
       phone: form.phone,
-      email: form.email.trim().toLowerCase(),
+      email: form.email,
+      password: form.password,
       role,
       providerId: role === "provider" ? form.providerId : null,
     });
-    navigate(role === "provider" ? "/provider" : "/");
+    if (!result.success) {
+      setLoginError(result.error);
+      return;
+    }
+    setLoginError("");
+    navigate(result.user.role === "provider" ? "/provider" : "/");
+  };
+
+  const handleRoleChange = (nextRole) => {
+    setRole(nextRole);
+    setForm((previous) => ({ ...previous, providerId: "" }));
+    setLoginError("");
   };
 
   return (
@@ -60,14 +72,14 @@ export default function Login() {
           </div>
 
           <div className="role-switch" aria-label="Account type">
-            <button type="button" className={role === "customer" ? "selected" : ""} onClick={() => setRole("customer")}>
+            <button type="button" className={role === "customer" ? "selected" : ""} onClick={() => handleRoleChange("customer")}>
               <UserRound size={16} /> Customer
             </button>
-            <button type="button" className={role === "provider" ? "selected" : ""} onClick={() => setRole("provider")}>
+            <button type="button" className={role === "provider" ? "selected" : ""} onClick={() => handleRoleChange("provider")}>
               <Wrench size={16} /> Provider
             </button>
           </div>
-          <div className="demo-credentials" role="note">Demo Mode · Password: <b>123456</b></div>
+          {registrationComplete && <p className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700 mt-4" role="status">Account created. Sign in to continue.</p>}
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-6">
             <label className="login-field">
@@ -104,6 +116,7 @@ export default function Login() {
             </button>
             {loginError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{loginError}</p>}
           </form>
+          <p className="text-center text-sm text-gray-500 mt-5">New here? <Link to="/signup" className="text-indigo-600 font-semibold hover:underline">Create an account</Link></p>
           <p className="text-center text-xs text-gray-400 mt-5"><Link to="/" className="text-indigo-600 hover:underline">← Back to Home</Link></p>
         </div>
       </section>

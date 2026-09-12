@@ -8,6 +8,7 @@ import Tracking from "./pages/Tracking";
 import MyRequests from "./pages/MyRequests";
 import Login from "./pages/Login";
 import Landing from "./pages/Landing";
+import Signup from "./pages/Signup";
 import { useApp } from "./context/AppContext";
 
 function Navbar() {
@@ -92,6 +93,7 @@ export default function App() {
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/" element={<HomeRoute />} />
             <Route path="/match/:id" element={<ProtectedRoute role="customer"><MatchResult /></ProtectedRoute>} />
             <Route path="/tracking/:id" element={<ProtectedRoute role="customer"><Tracking /></ProtectedRoute>} />

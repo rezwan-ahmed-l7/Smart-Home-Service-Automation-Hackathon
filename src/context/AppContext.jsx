@@ -21,12 +21,21 @@ const normalizeRequest = (request) => ({
   paidAmount: Number.isFinite(request.paidAmount) ? request.paidAmount : null,
   paidAt: request.paidAt || null,
 });
+const normalizeAccount = (account) => ({
+  ...account,
+  username: typeof account.username === "string" ? account.username : "",
+  phone: typeof account.phone === "string" ? account.phone : "",
+  email: typeof account.email === "string" ? account.email.toLowerCase() : "",
+  password: typeof account.password === "string" ? account.password : "",
+  role: account.role === "provider" ? "provider" : "customer",
+  providerId: account.role === "provider" ? account.providerId || null : null,
+});
 
 function readStoredValue(key, fallback) {
   try {
     const saved = localStorage.getItem(key);
     const parsed = saved ? JSON.parse(saved) : fallback;
-    if (["service_requests", "smartservice_booked_slots"].includes(key) && !Array.isArray(parsed)) return fallback;
+    if (["service_requests", "smartservice_booked_slots", "smartservice_accounts"].includes(key) && !Array.isArray(parsed)) return fallback;
     if (key === "smartservice_user" && (parsed === null || typeof parsed !== "object" || Array.isArray(parsed))) {
       return fallback;
     }
@@ -54,6 +63,11 @@ export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() =>
     readStoredValue("smartservice_user", null)
   );
+  const [accounts, setAccounts] = useState(() =>
+    readStoredValue("smartservice_accounts", [])
+      .filter((account) => account && typeof account === "object")
+      .map(normalizeAccount)
+  );
   const [bookedSlots, setBookedSlots] = useState(() =>
     readStoredValue("smartservice_booked_slots", [])
   );
@@ -67,6 +81,10 @@ export function AppProvider({ children }) {
     persistValue("smartservice_booked_slots", bookedSlots);
   }, [bookedSlots]);
 
+  useEffect(() => {
+    persistValue("smartservice_accounts", accounts);
+  }, [accounts]);
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     window.setTimeout(() => setToast(null), 2500);
@@ -75,6 +93,44 @@ export function AppProvider({ children }) {
   const login = (user) => {
     setCurrentUser(user);
     persistValue("smartservice_user", user);
+  };
+
+  const registerAccount = (account) => {
+    const normalized = normalizeAccount({
+      ...account,
+      email: account.email.trim().toLowerCase(),
+      username: account.username.trim(),
+    });
+    const duplicate = accounts.some((item) =>
+      item.email === normalized.email || item.username.toLowerCase() === normalized.username.toLowerCase()
+    );
+    if (duplicate) {
+      return { success: false, error: "An account with that username or Gmail already exists." };
+    }
+    if (normalized.role === "provider" && !providers.some((provider) => provider.id === normalized.providerId)) {
+      return { success: false, error: "Choose a provider profile to continue." };
+    }
+    setAccounts((previous) => [...previous, normalized]);
+    return { success: true };
+  };
+
+  const authenticate = ({ username, email, phone, password, role, providerId }) => {
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedUsername = username.trim().toLowerCase();
+    const account = accounts.find((item) =>
+      item.username.toLowerCase() === normalizedUsername &&
+      item.email === normalizedEmail &&
+      item.phone === phone &&
+      item.password === password &&
+      item.role === role &&
+      (role !== "provider" || item.providerId === providerId)
+    );
+    if (!account) {
+      return { success: false, error: "The details you entered do not match a registered account." };
+    }
+    const { password: _password, ...sessionUser } = account;
+    login(sessionUser);
+    return { success: true, user: sessionUser };
   };
 
   const logout = () => {
@@ -219,6 +275,8 @@ export function AppProvider({ children }) {
         markRequestPaid,
         currentUser,
         login,
+        authenticate,
+        registerAccount,
         logout,
         providers,
         bookedSlots,

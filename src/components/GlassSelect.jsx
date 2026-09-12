@@ -11,7 +11,7 @@ export default function GlassSelect({
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
-  const selected = options.find((option) => option.value === value) || options[0];
+  const selected = options.find((option) => option.value === value);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {

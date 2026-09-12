@@ -254,11 +254,6 @@ button { cursor: pointer; }
 .role-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, .3); border: 1px solid rgba(255, 255, 255, .5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .role-switch button { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px; border: 0; border-radius: 10px; color: #7b8292; background: transparent; font-size: .86rem; font-weight: 750; transition: .2s ease; }
 .role-switch button.selected { color: #4f46e5; background: rgba(255, 255, 255, .68); box-shadow: 0 4px 12px rgba(32, 39, 70, .1); }
-.demo-credentials {
-  display: grid; gap: 3px; margin-top: 14px; padding: 11px 13px; border: 1px solid rgba(129, 140, 248, .24);
-  border-radius: 13px; color: #686b8a; background: rgba(238, 239, 255, .48); font-size: .72rem;
-}
-.demo-credentials strong { color: #3730a3; font-size: .76rem; }
 .login-field { display: block; color: #4b5568; font-size: .78rem; font-weight: 750; }
 .login-field > span { display: block; margin-bottom: 7px; }
 .login-field > div { position: relative; }
@@ -303,4 +298,43 @@ button { cursor: pointer; }
   .select-field { min-width: 0; width: 100%; }
   .select-field.bare-select { flex: 1 1 100%; }
   .glass-select { min-width: 0; width: 100%; }
+}
+
+/* Keep the public product story concise while giving marketing copy a distinct voice. */
+.landing-title,
+.landing-section-title,
+.login-showcase-copy h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+}
+.landing-hero { padding-top: 72px; padding-bottom: 72px; }
+.landing-hero-art { min-height: 330px; }
+.landing-art-topline { position: relative; display: flex; align-items: center; justify-content: space-between; }
+.landing-art-orbit { position: absolute; border: 1px solid rgba(129, 140, 248, .25); border-radius: 50%; pointer-events: none; }
+.landing-orbit-one { width: 280px; height: 280px; top: 20px; right: -105px; }
+.landing-orbit-two { width: 190px; height: 190px; top: 65px; right: -60px; }
+.landing-art-card { margin-top: 48px; }
+.landing-section { padding-top: 58px; padding-bottom: 58px; }
+.landing-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.landing-steps { grid-template-columns: repeat(4, 1fr); }
+.landing-step { min-height: 160px; }
+.landing-step-icon { display: grid; place-items: center; width: 38px; height: 38px; margin-top: 18px; border-radius: 12px; color: #4f46e5; background: #eeefff; }
+.landing-step p { margin-top: 12px; }
+.landing-feature { gap: 54px; padding-top: 64px; padding-bottom: 64px; }
+.landing-signal { align-items: flex-start; }
+.landing-signal-icon { display: grid; place-items: center; flex: 0 0 auto; width: 36px; height: 36px; border-radius: 11px; color: #4f46e5; background: #eeefff; }
+.landing-signal h3 { color: #30384d; font-size: .92rem; font-weight: 800; }
+.landing-signal p { margin-top: 4px; color: #7b8292; font-size: .78rem; font-weight: 400; line-height: 1.45; }
+.landing-final { margin-top: 24px; margin-bottom: 56px; }
+.signup-page .login-showcase-copy { margin-top: 15vh; }
+@media (max-width: 800px) {
+  .landing-section-heading { display: block; }
+  .landing-section-note { margin-top: 12px; }
+  .landing-steps { grid-template-columns: repeat(2, 1fr); }
+  .landing-step { min-height: 145px; }
+}
+@media (max-width: 520px) {
+  .landing-steps { grid-template-columns: 1fr; }
+  .landing-step { min-height: 0; }
+  .landing-final { margin-bottom: 32px; }
 }
