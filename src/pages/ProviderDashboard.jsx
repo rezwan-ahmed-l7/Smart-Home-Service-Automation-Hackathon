@@ -6,6 +6,7 @@ import GlassSelect from "../components/GlassSelect";
 const statusFlow = ["Requested", "Accepted", "On the Way", "In Progress", "Completed"];
 
 export default function ProviderDashboard() {
+  const navigate = useNavigate();
   const { requests, updateRequestStatus, acceptRequest, currentUser } = useApp();
   const [view, setView] = useState("active");
   const [search, setSearch] = useState("");
@@ -63,6 +64,9 @@ export default function ProviderDashboard() {
 
   return (
     <div className="page-wrap max-w-5xl">
+      <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mb-6 hover:underline">
+        ← Back
+      </button>
       <div className="mb-8">
         <p className="eyebrow">Professional workspace</p>
         <h1 className="page-title text-4xl">Provider Dashboard</h1>

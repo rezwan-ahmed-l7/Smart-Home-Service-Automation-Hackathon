@@ -22,7 +22,6 @@ export default function Landing() {
           <p className="landing-lede">Find trusted service professionals, compare smart matches, schedule effortlessly, and track every step.</p>
           <div className="flex flex-wrap gap-3 mt-8">
             <Link to="/login" className="primary-button px-6 py-3 rounded-xl font-bold">Get Started <ArrowRight size={17} /></Link>
-            <Link to="/login?role=provider" className="landing-secondary-button px-6 py-3 rounded-xl font-bold">I&apos;m a Service Provider</Link>
           </div>
           <p className="landing-signin">Already have an account? <Link to="/login">Sign in</Link></p>
         </div>

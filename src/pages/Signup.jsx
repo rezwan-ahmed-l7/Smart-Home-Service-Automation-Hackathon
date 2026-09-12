@@ -135,7 +135,7 @@ export default function Signup() {
             {signupError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{signupError}</p>}
           </form>
           <p className="text-center text-sm text-gray-500 mt-5">Already registered? <Link to="/login" className="text-indigo-600 font-semibold hover:underline">Sign in</Link></p>
-          <p className="text-center text-xs text-gray-400 mt-4"><Link to="/" className="text-indigo-600 hover:underline">← Back to Home</Link></p>
+          <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mt-4 hover:underline w-full">← Back</button>
         </div>
       </section>
     </main>

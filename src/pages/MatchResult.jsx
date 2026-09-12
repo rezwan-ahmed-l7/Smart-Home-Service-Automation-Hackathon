@@ -29,6 +29,9 @@ export default function MatchResult() {
 
   return (
     <div className="page-wrap max-w-4xl">
+      <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mb-6 hover:underline">
+        ← Back
+      </button>
       <p className="eyebrow">Your perfect match</p>
       <h1 className="page-title text-4xl">Recommended Providers</h1>
       <p className="page-subtitle mb-10">

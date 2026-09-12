@@ -51,10 +51,6 @@ export default function Login() {
   return (
     <main className="login-page">
       <section className="login-showcase">
-        <Link to="/" className="brand-mark login-brand">
-          <span className="brand-icon"><Wrench size={19} /></span>
-          Smart Home <span className="text-indigo-600">Service</span>
-        </Link>
         <div className="login-showcase-copy">
           <p className="eyebrow">Smart Home Service</p>
           <h1>Welcome to smarter home service.</h1>
@@ -117,7 +113,7 @@ export default function Login() {
             {loginError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{loginError}</p>}
           </form>
           <p className="text-center text-sm text-gray-500 mt-5">New here? <Link to="/signup" className="text-indigo-600 font-semibold hover:underline">Create an account</Link></p>
-          <p className="text-center text-xs text-gray-400 mt-5"><Link to="/" className="text-indigo-600 hover:underline">← Back to Home</Link></p>
+          <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mt-5 hover:underline w-full">← Back</button>
         </div>
       </section>
     </main>

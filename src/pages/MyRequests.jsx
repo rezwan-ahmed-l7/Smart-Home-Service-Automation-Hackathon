@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Clock, MapPin, ChevronRight } from "lucide-react";
 
 export default function MyRequests() {
+  const navigate = useNavigate();
   const { requests, currentUser } = useApp();
 
   const sorted = requests.filter((request) => request.ownerEmail === currentUser?.email).sort(
@@ -11,6 +12,9 @@ export default function MyRequests() {
 
   return (
     <div className="page-wrap max-w-4xl">
+      <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mb-6 hover:underline">
+        ← Back
+      </button>
       <p className="eyebrow">Your activity</p>
       <h1 className="page-title text-4xl">My Requests</h1>
       <p className="page-subtitle mb-10">Track every service request from one calm, clear dashboard.</p>

@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { CheckCircle, Circle, MapPin, Clock, User, Phone, Star } from "lucide-react";
@@ -8,6 +8,7 @@ const statusSteps = ["Requested", "Accepted", "On the Way", "In Progress", "Comp
 
 export default function Tracking() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { requests, providers, currentUser, rateRequest, showToast } = useApp();
   const request = requests.find((r) => r.id === id && r.ownerEmail === currentUser?.email);
   const [selectedRating, setSelectedRating] = useState(request?.rating || 0);
@@ -36,6 +37,9 @@ export default function Tracking() {
 
   return (
     <div className="page-wrap max-w-3xl">
+      <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mb-6 hover:underline">
+        ← Back
+      </button>
       <p className="eyebrow">Live service status</p>
       <h1 className="page-title text-4xl">Track Your Request</h1>
       <p className="page-subtitle mb-10">
@@ -216,9 +220,6 @@ export default function Tracking() {
         </>
       )}
 
-      <Link to="/" className="text-blue-600 hover:underline text-sm">
-        ← Back to Home
-      </Link>
     </div>
   );
 }
