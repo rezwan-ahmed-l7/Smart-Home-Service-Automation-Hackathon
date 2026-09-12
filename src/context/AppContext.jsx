@@ -20,6 +20,9 @@ const normalizeRequest = (request) => ({
   paymentMethod: request.paymentMethod || null,
   paidAmount: Number.isFinite(request.paidAmount) ? request.paidAmount : null,
   paidAt: request.paidAt || null,
+  rejectedByProviderIds: Array.isArray(request.rejectedByProviderIds)
+    ? request.rejectedByProviderIds
+    : [],
 });
 const normalizeAccount = (account) => ({
   ...account,
@@ -199,6 +202,31 @@ export function AppProvider({ children }) {
       showToast("You are not authorized to update this request.", "error");
       return false;
     }
+
+    if (status === "Rejected" && isEligibleProvider) {
+      const providerId = currentUser.providerId;
+      const remainingProviders = (request.matchedProviders || []).filter(
+        (provider) => provider.id !== providerId
+      );
+      const allRejected = remainingProviders.length === 0;
+
+      setRequests((prev) => prev.map((req) => (
+        req.id === id ? {
+          ...req,
+          matchedProviders: remainingProviders,
+          rejectedByProviderIds: [...(req.rejectedByProviderIds || []), providerId],
+          status: allRejected ? "Rejected" : req.status,
+        } : req
+      )));
+
+      showToast(
+        allRejected
+          ? "All matched providers declined this request."
+          : "Request declined. Still visible to other matched providers."
+      );
+      return true;
+    }
+
     setRequests((prev) => prev.map((req) => (
       req.id === id ? {
         ...req,
