@@ -21,8 +21,8 @@ export default function Signup() {
   const [signupError, setSignupError] = useState("");
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((previous) => ({ ...previous, [name]: value }));
+    const { name, value, dataset } = event.target;
+    setForm((previous) => ({ ...previous, [dataset.field || name]: value }));
     setSignupError("");
   };
 
@@ -54,7 +54,7 @@ export default function Signup() {
       setSignupError(result.error);
       return;
     }
-    navigate("/login?registered=1");
+    navigate(result.user.role === "provider" ? "/provider" : "/");
   };
 
   return (
@@ -93,10 +93,10 @@ export default function Signup() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+          <form key={role} id={`${role}-signup-form`} autoComplete="on" onSubmit={handleSubmit} className="space-y-4 mt-6">
             <label className="login-field">
               <span>Username</span>
-              <div><UserRound size={17} /><input className="field" name="username" value={form.username} onChange={handleChange} placeholder="Your username" minLength={2} pattern="[A-Za-z0-9_ ]+" title="Use letters, numbers, spaces, or underscores" required /></div>
+              <div><UserRound size={17} /><input className="field" name={`${role}-username`} data-field="username" type="text" inputMode="text" autoComplete="username" value={form.username} onChange={handleChange} placeholder="Your username" minLength={2} pattern="[A-Za-z0-9_ ]+" title="Use letters, numbers, spaces, or underscores" required /></div>
             </label>
             {role === "provider" && (
               <label className="login-field">
@@ -113,20 +113,20 @@ export default function Signup() {
             )}
             <label className="login-field">
               <span>Phone number</span>
-              <div><Phone size={17} /><input className="field" type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="01XXXXXXXXX" pattern="01[0-9]{9}" title="Enter a valid 11-digit Bangladesh phone number" required /></div>
+              <div><Phone size={17} /><input className="field" type="tel" name={`${role}-phone`} data-field="phone" autoComplete="tel" value={form.phone} onChange={handleChange} placeholder="01XXXXXXXXX" pattern="01[0-9]{9}" title="Enter a valid 11-digit Bangladesh phone number" required /></div>
             </label>
             <label className="login-field">
               <span>Gmail address</span>
-              <div><AtSign size={17} /><input className="field" type="email" name="email" value={form.email} onChange={handleChange} placeholder="you@gmail.com" pattern=".+@gmail\.com" title="Please use a Gmail address" required /></div>
+              <div><AtSign size={17} /><input className="field" type="email" name={`${role}-email`} data-field="email" autoComplete="email" value={form.email} onChange={handleChange} placeholder="you@gmail.com" pattern=".+@gmail\.com" title="Please use a Gmail address" required /></div>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="login-field">
                 <span>Password</span>
-                <div><LockKeyhole size={17} /><input className="field" type="password" name="password" value={form.password} onChange={handleChange} placeholder="At least 6 characters" minLength={6} required /></div>
+                <div><LockKeyhole size={17} /><input className="field" type="password" name={`${role}-password`} data-field="password" autoComplete="new-password" value={form.password} onChange={handleChange} placeholder="At least 6 characters" minLength={6} required /></div>
               </label>
               <label className="login-field">
                 <span>Confirm password</span>
-                <div><LockKeyhole size={17} /><input className="field" type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} placeholder="Repeat password" minLength={6} required /></div>
+                <div><LockKeyhole size={17} /><input className="field" type="password" name={`${role}-confirm-password`} data-field="confirmPassword" autoComplete="new-password" value={form.confirmPassword} onChange={handleChange} placeholder="Repeat password" minLength={6} required /></div>
               </label>
             </div>
             <button className="primary-button w-full rounded-xl py-3.5 font-bold mt-2" type="submit">
@@ -135,7 +135,7 @@ export default function Signup() {
             {signupError && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{signupError}</p>}
           </form>
           <p className="text-center text-sm text-gray-500 mt-5">Already registered? <Link to="/login" className="text-indigo-600 font-semibold hover:underline">Sign in</Link></p>
-          <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mt-4 hover:underline w-full">← Back</button>
+          <button type="button" onClick={() => navigate(window.history.length > 1 ? -1 : "/")} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition mt-4 w-full">← Back</button>
         </div>
       </section>
     </main>

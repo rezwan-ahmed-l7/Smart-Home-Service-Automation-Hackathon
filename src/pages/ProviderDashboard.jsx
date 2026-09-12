@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Clock, MapPin, Phone, User, CheckCircle, Truck, Play, Check, Search, SlidersHorizontal } from "lucide-react";
 import GlassSelect from "../components/GlassSelect";
@@ -64,7 +65,7 @@ export default function ProviderDashboard() {
 
   return (
     <div className="page-wrap max-w-5xl">
-      <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mb-6 hover:underline">
+      <button type="button" onClick={() => navigate(window.history.length > 1 ? -1 : "/provider")} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition mb-6">
         ← Back
       </button>
       <div className="mb-8">

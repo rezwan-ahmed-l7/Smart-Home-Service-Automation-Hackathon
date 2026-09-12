@@ -37,7 +37,7 @@ export default function Tracking() {
 
   return (
     <div className="page-wrap max-w-3xl">
-      <button type="button" onClick={() => navigate(-1)} className="text-indigo-600 text-sm font-semibold mb-6 hover:underline">
+      <button type="button" onClick={() => navigate(window.history.length > 1 ? -1 : "/")} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition mb-6">
         ← Back
       </button>
       <p className="eyebrow">Live service status</p>

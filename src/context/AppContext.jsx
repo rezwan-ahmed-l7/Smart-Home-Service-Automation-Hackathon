@@ -111,7 +111,9 @@ export function AppProvider({ children }) {
       return { success: false, error: "Choose a provider profile to continue." };
     }
     setAccounts((previous) => [...previous, normalized]);
-    return { success: true };
+    const { password: _password, ...sessionUser } = normalized;
+    login(sessionUser);
+    return { success: true, user: sessionUser };
   };
 
   const authenticate = ({ username, email, phone, password, role, providerId }) => {

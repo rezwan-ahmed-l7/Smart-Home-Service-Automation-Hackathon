@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
-import { Home, Wrench, User, ClipboardList, LogIn, LogOut } from "lucide-react";
+import { Home, Wrench, User, ClipboardList, LogOut } from "lucide-react";
 import CustomerHome from "./pages/CustomerHome";
 import MatchResult from "./pages/MatchResult";
 import ProviderDashboard from "./pages/ProviderDashboard";
@@ -25,9 +25,6 @@ function Navbar() {
             <span className="brand-icon"><Wrench size={19} /></span>
             Smart Home <span className="text-indigo-600">Service</span>
           </Link>
-          <Link to="/login" className="primary-button px-4 py-2 rounded-xl text-sm font-semibold">
-            <LogIn size={16} /> Sign in
-          </Link>
         </div>
       </nav>
     );
@@ -35,7 +32,7 @@ function Navbar() {
   return (
     <nav className="site-header">
       <div className="header-inner flex items-center justify-between">
-        <Link to="/" className="brand-mark">
+        <Link to={isProvider ? "/provider" : "/"} className="brand-mark">
           <span className="brand-icon"><Wrench size={19} /></span>
           Smart Home <span className="text-indigo-600">Service</span>
         </Link>
@@ -59,11 +56,7 @@ function Navbar() {
             <button type="button" onClick={logout} className="nav-link" title={`Sign out ${currentUser.username}`}>
               <LogOut size={18} /> <span className="hidden sm:inline">Sign out</span>
             </button>
-          ) : (
-            <Link to="/login" className={`nav-link ${location.pathname === "/login" ? "active" : ""}`}>
-              <LogIn size={18} /> Sign in
-            </Link>
-          )}
+          ) : null}
         </div>
       </div>
       {toast && <div className={`toast toast-${toast.type}`} role="status">{toast.message}</div>}
