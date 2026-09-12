@@ -14,12 +14,6 @@
   A React-based smart home service platform that matches customers with local providers, tracks jobs live, and handles invoicing and ratings — built for the GC BAUST CSE Fest 2026 Hackathon.
 </p>
 
-<!--
-  Add a screenshot or short GIF here before sharing this repo with recruiters —
-  a visual preview is often the first thing people look at.
-  Example: ![App preview](./docs/preview.png)
--->
-
 ---
 
 ## About The Project
@@ -56,6 +50,100 @@ Runs fully client-side with LocalStorage — no backend required to try it out.
 - Urgency-aware matching algorithm
 - Frosted-glass UI components (custom date picker, selects)
 - LocalStorage persistence
+
+---
+
+# Application Workflow
+
+<table>
+<tr>
+<td width="45%">
+
+## 1. Sign In / Sign Up
+
+Users choose their role — **Customer** or **Provider** — and sign in with their account details. New users can create an account in seconds.
+
+Features demonstrated:
+
+- Role-based login (Customer / Provider)
+- Simple, guided account creation
+- Clean, welcoming first impression
+
+</td>
+
+<td width="55%">
+
+<img src="https://github.com/user-attachments/assets/afd9c280-8129-4ea4-9855-7d7f2fc5f4d5" width="100%">
+
+</td>
+</tr>
+
+<tr>
+<td width="45%">
+
+## 2. Browse & Select a Service
+
+Customers land on a clean service-selection page where they can search or pick from categories like plumbing, electrical, cleaning, and more.
+
+Features demonstrated:
+
+- Live search across services
+- Category-based browsing
+- Simple, guided entry point into the request flow
+
+</td>
+
+<td width="55%">
+
+<img src="https://github.com/user-attachments/assets/35fbc4f2-993d-4d38-ac99-4560f2284bcf" width="100%">
+
+</td>
+</tr>
+
+<tr>
+<td width="45%">
+
+## 3. Smart Provider Matching
+
+Once a request is submitted, the app scores every eligible provider using the matching algorithm (expertise, availability, distance, rating, price, urgency) and ranks them.
+
+Features demonstrated:
+
+- Visible Match Score per provider
+- Match reasons (why this provider was suggested)
+- One-click **Auto Assign Best Provider**
+
+</td>
+
+<td width="55%">
+
+<img src="https://github.com/user-attachments/assets/b75b8d4a-07cc-4b89-af8c-bae782eb5698" width="100%">
+
+</td>
+</tr>
+
+<tr>
+<td width="45%">
+
+## 4. Provider Dashboard
+
+Providers manage every incoming job from a single workspace — accepting, rejecting, and progressing jobs through the full status workflow.
+
+Features demonstrated:
+
+- Active jobs / completed / rating stats
+- Filter by urgency, search, and sort
+- Accept, reject, and update job status in real time
+
+</td>
+
+<td width="55%">
+
+<img src="https://github.com/user-attachments/assets/9bb3ed6c-ab35-41e3-9f02-0291a97d785a" width="100%">
+
+</td>
+</tr>
+</table>
 
 ---
 
