@@ -9,12 +9,11 @@
     "lint": "oxlint",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "date-fns": "^4.4.0",
-    "lucide-react": "^1.42.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.3"
+"dependencies": {
+  "lucide-react": "^1.42.0",
+  "react": "^19.2.8",
+  "react-dom": "^19.2.8",
+  "react-router-dom": "^7.18.3"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
