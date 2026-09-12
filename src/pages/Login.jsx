@@ -5,19 +5,24 @@ import { useApp } from "../context/AppContext";
 import GlassSelect from "../components/GlassSelect";
 
 const initialForm = { username: "", phone: "", email: "", password: "" };
+const initialProviderForm = { ...initialForm, providerId: "" };
 
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { authenticate, providers } = useApp();
   const [role, setRole] = useState(searchParams.get("role") === "provider" ? "provider" : "customer");
-  const [form, setForm] = useState({ ...initialForm, providerId: "" });
+  const [forms, setForms] = useState({ customer: initialForm, provider: initialProviderForm });
+  const form = forms[role];
   const [loginError, setLoginError] = useState("");
   const registrationComplete = searchParams.get("registered") === "1";
 
   const handleChange = (event) => {
     const { name, value, dataset } = event.target;
-    setForm((previous) => ({ ...previous, [dataset.field || name]: value }));
+    setForms((previous) => ({
+      ...previous,
+      [role]: { ...previous[role], [dataset.field || name]: value },
+    }));
   };
 
   const handleSubmit = (event) => {
@@ -44,7 +49,6 @@ export default function Login() {
 
   const handleRoleChange = (nextRole) => {
     setRole(nextRole);
-    setForm((previous) => ({ ...previous, providerId: "" }));
     setLoginError("");
   };
 
@@ -80,14 +84,14 @@ export default function Login() {
           <form key={role} id={`${role}-login-form`} autoComplete="on" onSubmit={handleSubmit} className="space-y-4 mt-6">
             <label className="login-field">
               <span>Username</span>
-              <div><UserRound size={17} /><input className="field" name={`${role}-username`} data-field="username" type="text" inputMode="text" autoComplete="username" value={form.username} onChange={handleChange} placeholder="Your username" minLength={2} pattern="[A-Za-z0-9_ ]+" title="Use letters, numbers, spaces, or underscores" required /></div>
+              <div><UserRound size={17} /><input className="field" name={`${role}-username`} data-field="username" type="text" inputMode="text" autoComplete="nickname" value={form.username} onChange={handleChange} placeholder="Your username" minLength={2} pattern="[A-Za-z0-9_ ]+" title="Use letters, numbers, spaces, or underscores" required /></div>
             </label>
             {role === "provider" && (
               <label className="login-field">
                 <span>Provider profile</span>
                 <GlassSelect
                   value={form.providerId}
-                  onChange={(providerId) => setForm((previous) => ({ ...previous, providerId }))}
+                  onChange={(providerId) => setForms((previous) => ({ ...previous, provider: { ...previous.provider, providerId } }))}
                   options={providers.map((provider) => ({ value: provider.id, label: provider.name }))}
                   ariaLabel="Provider profile"
                   icon={Wrench}
